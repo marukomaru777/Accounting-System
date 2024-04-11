@@ -7,7 +7,11 @@ from datetime import datetime
 # Create your models here.
 # 建立用戶模型
 class User(models.Model):
-    user_id = models.CharField(primary_key=True, max_length=100)
+    user_id = models.CharField(max_length=100)
+    account = models.CharField(max_length=100)
+    password = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    email = models.CharField(max_length=100)
 
     # 定義表的元data：描述其他數據的元素
     class Meta:
