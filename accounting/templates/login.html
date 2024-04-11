@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="row">
+    <div class="container" style="padding: 0px">
+        <div class="section justify-content-center align-items-center">
+            <ul class="nav justify-content-center" style="margin-bottom: 50px">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">會員登入Sign in</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">會員註冊Register</a>
+                </li>
+            </ul>
+            <div class="row justify-content-center">
+                <div class="row col-sm-4 col-12">
+                    <div class="col-sm-4 col-12 section-input">會員帳號</div>
+                    <div class="col-sm-8 col-12 section-input">
+                        <input type="text" class="form-control" id="account" name="USER_ACCOUNT" placeholder="請輸入帳號" />
+                    </div>
+                    <div class="col-sm-4 col-12 section-input">會員密碼</div>
+                    <div class="col-sm-8 col-12 section-input">
+                        <input type="password" class="form-control" name="USER_PASSWORD" placeholder="請輸入密碼" />
+                    </div>
+                    <div class="col-12 section-input text-center">
+                        <button type="button" class="btn btn-outline-secondary">
+                            登入
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

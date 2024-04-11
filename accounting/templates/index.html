@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="row">
+    <!-- Right Container -->
+    <div class="col-sm-3 col-12">
+        <!-- summary -->
+        <div class="col-12 side">
+            <div class="col-12 tip">
+                該月總花費：30000
+            </div>
+        </div>
+        <!-- summary by class -->
+        <div class="col-sm-12 d-sm-block d-none side">
+            <div class="col-12 tip">該月各個類別花費</div>
+            <ul>
+                <li>飲食：10000</li>
+                <li>購物：10000</li>
+                <li>日常用品：10000</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Left Container -->
+    <div class="col-sm-9 col-12">
+        <!-- tool bar -->
+        <div class="col-12 row" style="margin: 0; padding-left: 0;">
+            <div class="col-sm-3 col-12"><input type="text" class="form-control" id="search-date"></div>
+            <div class="col-sm-9 d-sm-block d-none text-right"><button type="button" class="btn btn-dark">新增</button>
+            </div>
+        </div>
+
+        <!-- daily -->
+        <div class="col-12 row daily-list">
+            <!-- daily summary -->
+            <div class="col-12 row sum">
+                <div class="col-4">2023/03/12</div>
+                <div class="col-8" style="text-align: right;">-200</div>
+            </div>
+            <!-- daily detail -->
+            <div class="col-12 row detail-list">
+                <div class="col-12 row detail">
+                    <!-- icon -->
+                    <div class="col-sm-2 d-sm-block d-none icon">
+                        <img src="{% static 'img/icon.png' %}" class="img-fluid">
+                    </div>
+                    <!-- description -->
+                    <div class="col-sm-6 col-7 description">
+                        <div class="col-12 class">class</div>
+                        <div class="col-12 tag">tag</div>
+                        <div class="col-sm-12 d-sm-block d-none info">description</div>
+                    </div>
+                    <div class="col-sm-4 col-5 row amount">
+                        <p class="col-12 text-right" style="text-align: right;">100</p>
+                    </div>
+                </div>
+            </div>
+            <!-- daily detail -->
+            <div class="col-12 row detail-list">
+                <div class="col-12 row detail">
+                    <!-- icon -->
+                    <div class="col-sm-2 d-sm-block d-none icon">
+                        <img src="{% static 'img/icon.png' %}" class="img-fluid">
+                    </div>
+                    <!-- description -->
+                    <div class="col-sm-6 col-7 description">
+                        <div class="col-12 class">class</div>
+                        <div class="col-12 tag">tag</div>
+                        <div class="col-sm-12 d-sm-block d-none info">description</div>
+                    </div>
+                    <div class="col-sm-4 col-5 row amount">
+                        <p class="col-12 text-right" style="text-align: right;">100</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

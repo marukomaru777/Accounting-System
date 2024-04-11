@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-5.0.0-dist/css/bootstrap.min.css' %}">
+    <script src="{% static 'bootstrap-5.0.0-dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.slim.min.js' %}"></script>
+    <title>INeedMoney</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container" style="height: 120px; padding: 20px 0px;">
+            <div class="row" style="height: 100%; padding: 0px;">
+                <!-- Logo -->
+                <div class="col-sm-3  col-7">
+                    <img src="{% static 'img/logo.png' %}" width="90%">
+                </div>
+
+                <!-- NabBar -->
+                <div class="col-sm-9 col-5" style="padding: 10px 5px;">
+                    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: white;">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                            <div class="navbar-nav">
+                                <a class="nav-item nav-link" href="#">明細</a>
+                                <a class="nav-item nav-link" href="#">總表</a>
+                                <div class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        設定
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                        <a class="dropdown-item" href="#">分類</a>
+                                        <a class="dropdown-item" href="#">標籤</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="navbar-nav ml-auto">
+                                <a class="nav-item nav-link" href="login.html">登入</a>
+                                <a class="nav-item nav-link" href="login.html">註冊</a>
+                                <a class="nav-item nav-link" href="#">使用者</a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="padding: 0px;">
+        {% block body %}
+        {% endblock %}
+    </div>
+</body>
+
+</html>

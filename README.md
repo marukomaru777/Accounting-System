@@ -32,7 +32,6 @@ parser = WebhookParser(settings.CHANNEL_SECRET)
 [ngrok下載後安裝](https://ngrok.com/download)
 ```shell
 ngrok authtoken <token>
-ngrok http <port>
 ```
 
 修改vs code launch.json
@@ -49,6 +48,10 @@ DEBUG = True # debug模式，程式上線後改False
 ALLOWED_HOSTS = ["your host"]
 ```
 
+啟動
+```shell
+ngrok http <port>
+```
 ### STEP5 部屬到render
 [render](https://dashboard.render.com/)
 #### django connect to postgresql
