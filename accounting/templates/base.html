@@ -9,8 +9,10 @@
     <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-5.0.0-dist/css/bootstrap.min.css' %}">
     <script src="{% static 'bootstrap-5.0.0-dist/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/jquery.slim.min.js' %}"></script>
-    <title>INeedMoney</title>
+    <script src="{% static 'js/base.js' %}"></script>
+    <title>{% block title %}RichMan{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    {% block link_file %}{% endblock %}
 </head>
 
 <body>
@@ -33,7 +35,7 @@
                         </button>
                         <div class="collapse navbar-collapse" id="navbarNavDropdown">
                             <div class="navbar-nav">
-                                <a class="nav-item nav-link" href="#">明細</a>
+                                <a class="nav-item nav-link" href="{% url 'detail' %}">明細</a>
                                 <a class="nav-item nav-link" href="#">總表</a>
                                 <div class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
@@ -47,8 +49,6 @@
                                 </div>
                             </div>
                             <div class="navbar-nav ml-auto">
-                                <a class="nav-item nav-link" href="login.html">登入</a>
-                                <a class="nav-item nav-link" href="login.html">註冊</a>
                                 <a class="nav-item nav-link" href="#">使用者</a>
                             </div>
                         </div>
@@ -65,3 +65,6 @@
 </body>
 
 </html>
+
+{% block js_script %}
+{% endblock %}

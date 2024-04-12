@@ -5,3 +5,25 @@
 .section-input {
     margin-bottom: 20px;
 }
+
+td {
+    font-size: 18px;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#sign-nav td {
+    text-align: center;
+}
+
+#input-table td {
+    vertical-align: text-top;
+}
+
+#input-table .errMsg {
+    font-size: 12px;
+    color: red;
+}

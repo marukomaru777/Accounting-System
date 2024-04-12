@@ -1,56 +1,72 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}登入會員｜RichMan{% endblock %}
+{% block link_file %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+{% endblock %}
 {% block body %}
 <style>
-    .section {
-        height: 60vh;
-    }
-
-    .section-input {
-        margin-bottom: 20px;
-    }
-
-    td {
-        font-size: 18px;
-    }
-
-    table {
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .signNav td {
-        text-align: center;
-        cursor: pointer;
-    }
 </style>
 <div class="row">
     <div class="container section justify-content-center align-items-center" style="padding: 0px">
-        <table class="signNav" width="20%">
-            <tr>
-                <td style="border-right: 1px solid; color: lightgray;">會員登入</td>
-                <td>會員註冊</td>
-            </tr>
-            <tr>
-                <td style="border-right: 1px solid; color: lightgray;">Sign in</td>
-                <td>Register</td>
-            </tr>
-        </table>
-        <table width="30%" style="margin-top: 40px;">
-            <form action="/accounting/login/" method="post">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="collapse navbar-collapse">
+                <table id="sign-nav" class="navbar-nav" width="20%">
+                    <tr>
+                        <td style="border-right: 1px solid;" class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <span>會員登入</span>
+                                <span>Sign in</span>
+                            </a>
+                        </td>
+                        <td class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <span>會員註冊</span>
+                                <span>Register</span>
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </nav>
+
+        <table width="30%" style="margin-top: 40px;" id="input-table">
+            <form action=" {% url 'registration' %}" method="post" id="register-form">
                 {% csrf_token %}
                 <tr style="height:60px">
                     <td width="30%" class="section-input">會員帳號</td>
-                    <td width="70%" class="section-input">{{form.account}}</td>
+                    <td width="70%" class="section-input">
+                        {{form.account}}
+                        {% for error in form.account.errors %}
+                        <span class="errMsg">{{ error }}</span>
+                        {% endfor %}
+                        <span class="errMsg" id="acc-errMsg"></span>
+                    </td>
                 </tr>
                 <tr style="height:60px">
-                    <td width="30%" class="section-input">會員密碼</td>
-                    <td width="70%" class="section-input">{{form.password}}</td>
+                    <td width="30%" class="section-input">密碼</td>
+                    <td width="70%" class="section-input">
+                        {{form.password}}
+                        {% for error in form.password.errors %}
+                        <span class="errMsg">{{ error }}</span>
+                        {% endfor %}
+                        <span class="errMsg" id="pwd-errMsg"></span>
+                    </td>
+                </tr>
+                <tr style="height:60px">
+                    <td width="30%" class="section-input">確認密碼</td>
+                    <td width="70%" class="section-input">
+                        {{form.confirm_password}}
+                        {% for error in form.confirm_password.errors %}
+                        <span class="errMsg">{{ error }}</span>
+                        {% endfor %}
+                        <span class="errMsg" id="pwd2-errMsg"></span>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="2" class="section-input text-center">
                         <button type="submit" class="btn btn-outline-secondary" style="width: 130px; height: 50px;">
-                            登入
+                            繼續註冊
                         </button>
                     </td>
                 </tr>
@@ -58,4 +74,89 @@
         </table>
     </div>
 </div>
+{% endblock %}
+
+{% block js_script %}
+<script>
+    $(function () {
+        $(`#{{form.password.auto_id}}`).change(function () {
+            let passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,16}$/;
+            if (!passwordRegex.test($("#{{form.password.auto_id}}").val())) {
+                $('#pwd-errMsg').text("密碼需介於 8-16 碼需有 1 個以上英文字且有 1 個以上數字");
+            } else {
+                $('#pwd-errMsg').text("");
+            }
+        });
+
+        $(`#{{form.confirm_password.auto_id}}`).change(function () {
+            chkPwd("{{form.password.auto_id}}", "{{form.confirm_password.auto_id}}");
+        });
+
+        $('#register-form').submit(function (event) {
+            event.preventDefault();
+            if (isValidate()) {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'registration' %}",
+                    headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            alert("註冊成功");
+                            window.location.href = '{% url "login" %}';
+                        } else {
+                            isValidate();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("發生錯誤:" + error);
+                    }
+                });
+            }
+        });
+    });
+    function chkAcc() {
+        $.ajax({
+            type: "POST",
+            url: "{% url 'chkAcc' %}",
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            data: $(this).serialize(),
+            success: function (response) {
+                if (!response.success) {
+                    alert(response.errors);
+                    window.location.href = '{% url "login" %}';
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("系統發生錯誤:" + error);
+            }
+        });
+    }
+    function chkPwd(id1, id2) {
+        if ($(`#${id1}`).val() && $(`#${id2}`).val()) {
+            if ($(`#${id1}`).val() !== $(`#${id2}`).val()) {
+                $("#pwd2-errMsg").text("密碼 與 確認密碼 不一致");
+                return false;
+            } else {
+                $("#pwd2-errMsg").text("");
+            }
+        } else {
+            $("#pwd2-errMsg").text("");
+        }
+        return true;
+    }
+    function isValidate() {
+        flag = true;
+        if ($(`#{{form.account.auto_id}}`).val().length == 0) {
+            $("#acc-errMsg").val("請輸入Email");
+            flag = false;
+        } else {
+            chkAcc();
+        }
+        if (!chkPwd("{{form.password.auto_id}}", "{{form.confirm_password.auto_id}}")) {
+            flag = false;
+        }
+        return flag;
+    }
+</script>
 {% endblock %}

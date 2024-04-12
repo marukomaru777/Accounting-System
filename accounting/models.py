@@ -10,8 +10,8 @@ class User(models.Model):
     user_id = models.CharField(max_length=100)
     account = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
-    name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
+    name = models.CharField(max_length=50)
+    email = models.CharField(max_length=200)
 
     # 定義表的元data：描述其他數據的元素
     class Meta:
