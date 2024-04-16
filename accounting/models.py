@@ -6,12 +6,12 @@ from datetime import datetime
 
 # Create your models here.
 # 建立用戶模型
-class User(models.Model):
-    user_id = models.CharField(max_length=100)
+class CustomUser(models.Model):
+    user_id = models.CharField(max_length=100, primary_key=True)
     account = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
-    name = models.CharField(max_length=50)
-    email = models.CharField(max_length=200)
+    name = models.CharField(max_length=50, null=True)
+    email = models.CharField(max_length=200, null=True)
 
     # 定義表的元data：描述其他數據的元素
     class Meta:
@@ -20,7 +20,12 @@ class User(models.Model):
 
 class Category(models.Model):
     c_id = models.BigAutoField(primary_key=True)
-    user_id = models.CharField(max_length=100)
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="user_category",
+        to_field="user_id",
+    )
     c_type = models.CharField(max_length=2)
     c_name = models.CharField(max_length=50)
     c_icon = models.CharField(max_length=200)
@@ -31,8 +36,18 @@ class Category(models.Model):
 
 class Expenses(models.Model):
     e_id = models.BigAutoField(primary_key=True)
-    user_id = models.CharField(max_length=100)
-    c_id = models.IntegerField()
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="user_expenses",
+        to_field="user_id",
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name="category_expenses",
+        to_field="c_id",
+    )
     e_date = models.DateField()
     e_type = models.CharField(max_length=2)
     e_amount = models.FloatField()

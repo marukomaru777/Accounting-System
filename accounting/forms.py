@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ValidationError
-from .models import User
+from .models import CustomUser
 
 
 class LoginForm(forms.Form):
@@ -31,7 +31,7 @@ class RegistrationForm(forms.Form):
 
     def clean_account(self):
         account = self.cleaned_data["account"]
-        if User.objects.filter(account=account).exists():
+        if CustomUser.objects.filter(account=account).exists():
             raise ValidationError("帳號已經存在 請重新登入")
         return account
 

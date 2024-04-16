@@ -1,34 +1,50 @@
-from django.forms import ValidationError
-from django.shortcuts import render, HttpResponseRedirect, HttpResponse
-from django.views.generic import FormView
+from django.shortcuts import render
+from django.shortcuts import redirect
 from .forms import LoginForm, RegistrationForm
 from accounting.func import *
 from django.http import JsonResponse
+from django.forms import ValidationError
 
 # Create your views here.
-err_result = {"success": False, "errors": "系統發生錯誤，請聯絡管理員"}
+
+
+def index(request):
+    if "user" in request.session:
+        current_user = request.session["user"]
+        param = {"current_user": current_user}
+        return render(request, "detail.html", param)
+    else:
+        return redirect("login")
+
+
+def logout(request):
+    try:
+        del request.session["user"]
+    except:
+        return redirect("login")
+    return redirect("login")
 
 
 def detail(request):
-    return render(request, "detail.html", {"test": "123"})
+    if "user" in request.session:
+        current_user = request.session["user"]
+        param = {"current_user": current_user}
+        return render(request, "detail.html", param)
+    return redirect("login")
 
 
 def login(request):
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            user = Login(form.cleaned_data)
-            if not user:
-                return JsonResponse(
-                    {"success": False, "errors": "身份驗證失敗，帳號不存在"}
-                )
-            if not check_password(form.cleaned_data["password"], user.password):
-                return JsonResponse(
-                    {"success": False, "errors": "身份驗證失敗，密碼錯誤"}
-                )
-            return JsonResponse({"success": True})
-    else:
-        form = LoginForm()
+    try:
+        if request.method == "POST":
+            form = LoginForm(request.POST)
+            if form.is_valid():
+                Login(form.cleaned_data)
+                request.session["user"] = form.cleaned_data["account"]
+                return JsonResponse({"success": True})
+        else:
+            form = LoginForm()
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
     return render(request, "login.html", {"form": form})
 
 
@@ -38,12 +54,14 @@ def registration(request):
             form = RegistrationForm(request.POST)
 
             if form.is_valid():
-                if Register(form.cleaned_data):
-                    return JsonResponse({"success": True})
+                Register(form.cleaned_data)
+                return JsonResponse({"success": True})
         else:
             form = RegistrationForm()
     except ValidationError as e:
         return JsonResponse({"success": False, "errors": e.message_dict})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
     return render(request, "registration.html", {"form": form})
 
 
@@ -52,9 +70,33 @@ def chkAcc(request):
         if request.method == "POST":
             if IsAccExists(request.POST.get("account")):
                 return JsonResponse(
-                    {"success": False, "errors": "帳號已經存在 請重新登入"}
+                    {"success": False, "errors": "帳號已經存在 請重新登入!"}
                 )
             else:
                 return JsonResponse({"success": True})
     except Exception as e:
-        return JsonResponse(err_result)
+        return JsonResponse({"success": False, "errors": str(e)})
+
+
+def getDetail(request):
+    try:
+        if request.method == "POST":
+            detail = GetExpenses(
+                request.POST.get("current_user"), request.POST.get("selected_date")
+            )
+            return JsonResponse({"success": True, "result": detail})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+    return JsonResponse({"success": False})
+
+
+def getSumDetail(request):
+    try:
+        if request.method == "POST":
+            sum_detail = GetSumExpenses(
+                request.POST.get("current_user"), request.POST.get("selected_date")
+            )
+            return JsonResponse({"success": True, "result": sum_detail})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+    return JsonResponse({"success": False})

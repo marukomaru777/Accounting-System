@@ -64,6 +64,7 @@
             if (isValidate()) {
                 $.ajax({
                     type: "POST",
+                    async: false,
                     url: "{% url 'login' %}",
                     headers: { 'X-CSRFToken': getCookie('csrftoken') },
                     data: $(this).serialize(),

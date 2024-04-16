@@ -31,7 +31,7 @@
         </nav>
 
         <table width="30%" style="margin-top: 40px;" id="input-table">
-            <form action=" {% url 'registration' %}" method="post" id="register-form">
+            <form id="register-form">
                 {% csrf_token %}
                 <tr style="height:60px">
                     <td width="30%" class="section-input">會員帳號</td>
@@ -97,15 +97,16 @@
             if (isValidate()) {
                 $.ajax({
                     type: "POST",
+                    async: false,
                     url: "{% url 'registration' %}",
                     headers: { 'X-CSRFToken': getCookie('csrftoken') },
-                    data: $(this).serialize(),
+                    data: $("#register-form").serialize(),
                     success: function (response) {
                         if (response.success) {
                             alert("註冊成功");
                             window.location.href = '{% url "login" %}';
                         } else {
-                            isValidate();
+                            alert(response.errors);
                         }
                     },
                     error: function (xhr, status, error) {
@@ -115,22 +116,26 @@
             }
         });
     });
-    function chkAcc() {
+    function isAccExist() {
+        flag = false
         $.ajax({
             type: "POST",
+            async: false,
             url: "{% url 'chkAcc' %}",
             headers: { 'X-CSRFToken': getCookie('csrftoken') },
-            data: $(this).serialize(),
+            data: $("#register-form").serialize(),
             success: function (response) {
                 if (!response.success) {
                     alert(response.errors);
-                    window.location.href = '{% url "login" %}';
+                    flag = true
                 }
             },
             error: function (xhr, status, error) {
                 console.error("系統發生錯誤:" + error);
+                flag = true
             }
         });
+        return flag
     }
     function chkPwd(id1, id2) {
         if ($(`#${id1}`).val() && $(`#${id2}`).val()) {
@@ -151,7 +156,9 @@
             $("#acc-errMsg").val("請輸入Email");
             flag = false;
         } else {
-            chkAcc();
+            if (isAccExist()) {
+                flag = false;
+            }
         }
         if (!chkPwd("{{form.password.auto_id}}", "{{form.confirm_password.auto_id}}")) {
             flag = false;

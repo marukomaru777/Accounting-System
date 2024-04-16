@@ -1,1 +1,1 @@
-from accounting.models import User, Category, Expenses, ExpenseResult
+from accounting.models import CustomUser, Category, Expenses, ExpenseResult

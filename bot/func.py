@@ -1,4 +1,4 @@
-from bot.models import User, Expenses, Category, ExpenseResult
+from bot.models import CustomUser, Expenses, Category, ExpenseResult
 from django.db.models import Sum
 from datetime import datetime
 import calendar
@@ -15,7 +15,7 @@ from linebot.models import (
 
 
 def MsgEvent(user_id, msg):
-    if User.objects.filter(user_id=user_id).exists():
+    if CustomUser.objects.filter(user_id=user_id).exists():
         if "明細" in msg.upper():
             if "今日" in msg.upper() or "今天" in msg.upper():
                 date_from = datetime.now().date()
@@ -63,7 +63,7 @@ def MsgEvent(user_id, msg):
 
 def Register(user_id):
     try:
-        User.objects.create(user_id=user_id)
+        CustomUser.objects.create(user_id=user_id)
         expense_list = ["飲食", "繳費", "日常", "購物", "娛樂", "其他"]
         income_list = ["薪水", "獎金", "兼職", "投資", "零用錢", "其他"]
         for i in income_list:
@@ -533,5 +533,5 @@ def UnfolwEvent(user_id):
     if Category.objects.filter(user_id=user_id).exists():
         Category.objects.filter(user_id=user_id).delete()
 
-    if User.objects.filter(user_id=user_id).exists():
-        User.objects.filter(user_id=user_id).delete()
+    if CustomUser.objects.filter(user_id=user_id).exists():
+        CustomUser.objects.filter(user_id=user_id).delete()
