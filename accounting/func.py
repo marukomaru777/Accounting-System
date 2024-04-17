@@ -27,7 +27,6 @@ def Register(model):
             with transaction.atomic():
                 new_user = CustomUser(
                     account=model["account"],
-                    user_id=model["account"],
                     password=make_password(model["password"]),
                 )
                 # Save the user to the database
@@ -36,11 +35,11 @@ def Register(model):
                 income_list = ["薪水", "獎金", "兼職", "投資", "零用錢", "其他"]
                 for i in income_list:
                     Category.objects.create(
-                        u_account=model["account"], c_type="+", c_name=i
+                        u_account_id=model["account"], c_type="+", c_name=i
                     )
                 for i in expense_list:
                     Category.objects.create(
-                        u_account=model["account"], c_type="-", c_name=i
+                        u_account_id=model["account"], c_type="-", c_name=i
                     )
         else:
             raise Exception("帳號已經存在 請重新登入")
@@ -65,7 +64,7 @@ def GetExpenses(acc, year_month):
     result = (
         Expenses.objects.select_related("category")
         .values("category__c_name", "e_date", "e_desc", "e_type", "e_amount")
-        .filter(u_account=acc, e_date__range=[date_from, date_to])
+        .filter(u_account_id=acc, e_date__range=[date_from, date_to])
     )
     return list(result)
 
@@ -76,6 +75,6 @@ def GetSumExpenses(acc, year_month):
         Expenses.objects.select_related("category")
         .values("category__c_name")  # 通过外键关联的模型名加上字段名来访问相关字段
         .annotate(total_spent=Sum("e_amount"))
-        .filter(u_account=acc, e_date__range=[date_from, date_to])
+        .filter(u_account_id=acc, e_date__range=[date_from, date_to])
     )
     return list(grouped_expenses)

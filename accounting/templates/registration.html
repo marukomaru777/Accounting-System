@@ -117,7 +117,7 @@
         });
     });
     function isAccExist() {
-        flag = false
+        let flag = false
         $.ajax({
             type: "POST",
             async: false,
@@ -151,14 +151,12 @@
         return true;
     }
     function isValidate() {
-        flag = true;
+        let flag = true;
         if ($(`#{{form.account.auto_id}}`).val().length == 0) {
             $("#acc-errMsg").val("請輸入Email");
             flag = false;
-        } else {
-            if (isAccExist()) {
-                flag = false;
-            }
+        } else if (isAccExist()) {
+            flag = false;
         }
         if (!chkPwd("{{form.password.auto_id}}", "{{form.confirm_password.auto_id}}")) {
             flag = false;
