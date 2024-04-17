@@ -7,9 +7,9 @@ from datetime import datetime
 # Create your models here.
 # 建立用戶模型
 class CustomUser(models.Model):
-    user_id = models.CharField(max_length=100, primary_key=True)
-    account = models.CharField(max_length=100)
+    account = models.CharField(max_length=100, primary_key=True)
     password = models.CharField(max_length=100)
+    line_id = models.CharField(max_length=100, null=True)
     name = models.CharField(max_length=50, null=True)
     email = models.CharField(max_length=200, null=True)
 
@@ -20,11 +20,11 @@ class CustomUser(models.Model):
 
 class Category(models.Model):
     c_id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(
+    u_account = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
         related_name="user_category",
-        to_field="user_id",
+        to_field="account",
     )
     c_type = models.CharField(max_length=2)
     c_name = models.CharField(max_length=50)
@@ -36,11 +36,11 @@ class Category(models.Model):
 
 class Expenses(models.Model):
     e_id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(
+    u_account = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
         related_name="user_expenses",
-        to_field="user_id",
+        to_field="account",
     )
     category = models.ForeignKey(
         Category,

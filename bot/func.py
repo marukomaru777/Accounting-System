@@ -15,7 +15,9 @@ from linebot.models import (
 
 
 def MsgEvent(user_id, msg):
-    if CustomUser.objects.filter(user_id=user_id).exists():
+    user = CustomUser.objects.filter(line_id=user_id).first()
+    if user:
+        user_id = user.account
         if "明細" in msg.upper():
             if "今日" in msg.upper() or "今天" in msg.upper():
                 date_from = datetime.now().date()
@@ -63,13 +65,13 @@ def MsgEvent(user_id, msg):
 
 def Register(user_id):
     try:
-        CustomUser.objects.create(user_id=user_id)
-        expense_list = ["飲食", "繳費", "日常", "購物", "娛樂", "其他"]
-        income_list = ["薪水", "獎金", "兼職", "投資", "零用錢", "其他"]
-        for i in income_list:
-            Category.objects.create(user_id=user_id, c_type="+", c_name=i)
-        for i in expense_list:
-            Category.objects.create(user_id=user_id, c_type="-", c_name=i)
+        # CustomUser.objects.create(user_id=user_id)
+        # expense_list = ["飲食", "繳費", "日常", "購物", "娛樂", "其他"]
+        # income_list = ["薪水", "獎金", "兼職", "投資", "零用錢", "其他"]
+        # for i in income_list:
+        #     Category.objects.create(user_id=user_id, c_type="+", c_name=i)
+        # for i in expense_list:
+        #     Category.objects.create(user_id=user_id, c_type="-", c_name=i)
         return True
     except Exception:
         return False
@@ -118,7 +120,7 @@ def GetCategory(user_id, c_type):
 
 def AddExpensesLog(model):
     Expenses.objects.create(
-        user_id=model.user_id,
+        u_account=model.u_account,
         c_id=model.c_id,
         e_date=model.e_date,
         e_type=model.e_type,
@@ -254,9 +256,9 @@ def GetDetMsg(user_id, date_from, date_to):
     return msg_return
 
 
-def GetAggMsg(user_id, date_from, date_to):
-    expense_result = GetExpenseAgg(user_id, "-", date_from, date_to)
-    income_result = GetExpenseAgg(user_id, "+", date_from, date_to)
+def GetAggMsg(user_acc, date_from, date_to):
+    expense_result = GetExpenseAgg(user_acc, "-", date_from, date_to)
+    income_result = GetExpenseAgg(user_acc, "+", date_from, date_to)
     total_expense = 0
     total_income = 0
     income_items = [
@@ -426,10 +428,10 @@ def GetAggMsg(user_id, date_from, date_to):
     return msg_return
 
 
-def PstBkEvent(user_id, postback_str):
+def PstBkEvent(user_acc, postback_str):
     postback_data = json.loads(postback_str)
     model = Expenses(
-        user_id=user_id,
+        u_account=user_acc,
         c_id=postback_data["c_id"],
         e_type=postback_data["type"],
         e_amount=postback_data["e_amount"],
@@ -526,12 +528,12 @@ def PstBkEvent(user_id, postback_str):
     return msg_return
 
 
-def UnfolwEvent(user_id):
-    if Expenses.objects.filter(user_id=user_id).exists():
-        Expenses.objects.filter(user_id=user_id).delete()
+def UnfolwEvent(user_acc):
+    if Expenses.objects.filter(u_account=user_acc).exists():
+        Expenses.objects.filter(u_account=user_acc).delete()
 
-    if Category.objects.filter(user_id=user_id).exists():
-        Category.objects.filter(user_id=user_id).delete()
+    if Category.objects.filter(u_account=user_acc).exists():
+        Category.objects.filter(u_account=user_acc).delete()
 
-    if CustomUser.objects.filter(user_id=user_id).exists():
-        CustomUser.objects.filter(user_id=user_id).delete()
+    if CustomUser.objects.filter(u_account=user_acc).exists():
+        CustomUser.objects.filter(u_account=user_acc).delete()
