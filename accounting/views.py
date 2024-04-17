@@ -1,11 +1,19 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, ExpenseForm
 from accounting.func import *
 from django.http import JsonResponse
 from django.forms import ValidationError
 
+
 # Create your views here.
+def data(request):
+    if "user" in request.session:
+        current_user = request.session["user"]
+        param = {"current_user": current_user}
+        return render(request, "data.html", param)
+    else:
+        return redirect("login")
 
 
 def index(request):
@@ -29,8 +37,19 @@ def detail(request):
     if "user" in request.session:
         current_user = request.session["user"]
         param = {"current_user": current_user}
+        if request.method == "POST":
+            try:
+                form = ExpenseForm(request.POST)
+                if form.is_valid():
+                    InsertExpense(form.cleaned_data)
+                    return JsonResponse({"success": True})
+            except Exception as e:
+                return JsonResponse({"success": False, "errors": str(e)})
+        else:
+            param = {"current_user": current_user, "form": ExpenseForm()}
         return render(request, "detail.html", param)
-    return redirect("login")
+    else:
+        return redirect("login")
 
 
 def login(request):
@@ -97,6 +116,16 @@ def getSumDetail(request):
                 request.POST.get("current_user"), request.POST.get("selected_date")
             )
             return JsonResponse({"success": True, "result": sum_detail})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+    return JsonResponse({"success": False})
+
+
+def getCategory(request):
+    try:
+        if request.method == "POST":
+            category = GetCategory(request.POST.get("current_user"))
+            return JsonResponse({"success": True, "result": category})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
     return JsonResponse({"success": False})

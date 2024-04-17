@@ -10,4 +10,6 @@ urlpatterns = [
     path("chkAcc", views.chkAcc, name="chkAcc"),
     path("getDetail", views.getDetail, name="getDetail"),
     path("getSumDetail", views.getSumDetail, name="getSumDetail"),
+    path("data", views.data, name="data"),
+    path("getCategory", views.getCategory, name="getCategory"),
 ]

@@ -78,3 +78,27 @@ def GetSumExpenses(acc, year_month):
         .filter(u_account_id=acc, e_date__range=[date_from, date_to])
     )
     return list(grouped_expenses)
+
+
+def GetCategory(acc):
+    category = Category.objects.values("c_id", "c_type", "c_name").filter(
+        u_account_id=acc
+    )
+    return list(category)
+
+
+def InsertExpense(model):
+    try:
+        with transaction.atomic():
+            new_expense = Expenses(
+                u_account=CustomUser.objects.get(account=model["current_user"]),
+                category=Category.objects.get(c_id=model["category"]),
+                e_date=model["date"],
+                e_type=model["type"],
+                e_amount=model["amount"],
+                e_desc=model["desc"],
+            )
+            # Save the user to the database
+            new_expense.save()
+    except Exception as e:
+        raise Exception("{}".format(e))

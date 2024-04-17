@@ -2,20 +2,16 @@
 {% load static %}
 {% block title %}Detail／明細{% endblock %}
 {% block link_file %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/daterangepicker.css' %}" />
 <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datepicker.css' %}" />
 <link rel="stylesheet" type="text/css" href="{% static 'css/detail.css' %}">
-<script type="text/javascript" src="{% static 'js/moment.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/daterangepicker.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap-datepicker.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap-datepicker.zh-TW.min.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
 {% endblock %}
 {% block body %}
 <div class="row">
     <!-- Right Container -->
     <div class="col-sm-3 col-12">
-        <div class="col-9 side">
+        <div class="col-9">
             <div class="input-group date" id="datepicker-search">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="prev-month-btn">&lt;</button>
@@ -43,7 +39,31 @@
     <div class="col-sm-9 col-12">
         <!-- tool bar -->
         <div class="col-12 row" style="margin: 0; padding-left: 0;">
-            <div class="col-sm-12 d-sm-block d-none text-right"><button type="button" class="btn btn-dark">新增</button>
+            <div class="col-sm-12 d-sm-block d-none text-right">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#insertModal">
+                    新增
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="insertModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="insertModalLabel">新增收支</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% include './form-expense.html' %}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-dark" id="modal-insert-btn">新增</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="daily-detail">
@@ -60,7 +80,7 @@
             todayHighlight: true,//今天會有一個底色
             clearBtn: false,//清除按钮
             minViewMode: "months", // 選擇月份模式
-            startView: "months",   // 初始顯示月份模式
+            startView: "months", // 初始顯示月份模式
             language: 'zh-TW'//中文化
         }).on("change", function () {
             let selected = $('#search-text').val();
@@ -68,19 +88,20 @@
             getSumDetailData(selected);
             getDetailData(selected);
         });
-
         $('#datepicker-search').datepicker('update', (new Date()));
-
         $('#prev-month-btn').click(function () {
             let current_date = $('#datepicker-search').datepicker('getDate');
             current_date.setMonth(current_date.getMonth() - 1);
             $('#datepicker-search').datepicker('update', current_date);
         });
-
         $('#next-month-btn').click(function () {
             let current_date = $('#datepicker-search').datepicker('getDate');
             current_date.setMonth(current_date.getMonth() + 1);
             $('#datepicker-search').datepicker('update', current_date);
+        });
+
+        $('#modal-insert-btn').click(function () {
+            saveInsertModalData();
         });
     });
 
@@ -96,7 +117,7 @@
             },
             success: function (response) {
                 if (response.success) {
-                    ProcessingData(response.result);
+                    processingData(response.result);
                 } else {
                     alert(response.errors);
                 }
@@ -107,76 +128,71 @@
         });
     }
 
-    function ProcessingData(raw_data) {
+    function processingData(raw_data) {
         // 創建一個空物件來存放分群後的資料
-        let grouped_deata = {};
+        let grouped_data = {};
 
         // 使用迴圈處理每筆資料
         for (let i = 0; i < raw_data.length; i++) {
-            let current_item = raw_data[i];
-            let e_date = current_item.e_date;
-
-            // 檢查分群是否已經存在，如果不存在，則創建一個新的陣列
-            if (!grouped_deata[e_date]) {
-                grouped_deata[e_date] = {
-                    data: [], // 存放当前分组的数据
-                    totalValue: 0 // 初始化总和为 0
+            let current_item = raw_data[i]; let e_date = current_item.e_date; //
+            // 檢查分群是否已經存在，如果不存在，則創建一個新的陣列 
+            if (!grouped_data[e_date]) {
+                grouped_data[e_date] = {
+                    data: [], // 每日的資料
+                    totalValue: 0 // 初始化每日花費總額 0 
                 };
             }
-
-            // 将数据加入到对应的分组中
-            grouped_deata[e_date].data.push(current_item);
-
-            // 更新当前分组的值的总和
+            // 將每日資料加入data中
+            grouped_data[e_date].data.push(current_item);
+            // 更新每日總和 
             if (current_item.e_type == '+') {
-                grouped_deata[e_date].totalValue += parseInt(current_item.e_amount);
-            } else {
-                grouped_deata[e_date].totalValue -= parseInt(current_item.e_amount);
+                grouped_data[e_date].totalValue += parseInt(current_item.e_amount);
+            }
+            else {
+                grouped_data[e_date].totalValue -= parseInt(current_item.e_amount);
             }
         }
-
-        // 對分群後的資料進行排序
-        // 依照 e_date 欄位遞減排序
-        for (let e_date in grouped_deata) {
-            grouped_deata[e_date].data.sort((a, b) => b.value - a.value);
-        }
-
-        let container = document.getElementById('daily-detail');
-        // 清空容器
-        container.innerHTML = '';
-
+        // 對分群後的資料進行排序，依照 e_date 欄位遞減排序 
+        let sorted_grouped_data = Object.entries(grouped_data)
+            .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA))
+            .reduce((obj, [date, value]) => {
+                obj[date] = value;
+                return obj;
+            }, {});
         // 遍歷排序後的資料，將每個分群的資料插入容器中
-        for (let date_data in grouped_deata) {
+        let container = document.getElementById('daily-detail');
+        container.innerHTML = '';
+        for (let date_data in sorted_grouped_data) {
             let daily_element = document.createElement('div');
             daily_element.classList.add('col-12', 'row', 'daily-list');
 
             let summary_element = document.createElement('div');
             summary_element.classList.add('col-12', 'row', 'sum');
             summary_element.innerHTML = `
-                <div class="col-4">${date_data}</div>
-                <div class="col-8" style="text-align: right;">Total: ${grouped_deata[date_data].totalValue}</div>
+            <div class="col-4">${date_data}</div>
+            <div class="col-8" style="text-align: right;">Total: ${grouped_data[date_data].totalValue}</div>
             `;
             daily_element.appendChild(summary_element);
 
-            for (let item of grouped_deata[date_data].data) {
+            for (let item of grouped_data[date_data].data) {
                 // 这里的 item 就是数组中的每个对象
                 let detail_element = document.createElement('div');
                 detail_element.classList.add('col-12', 'row', 'detail-list');
                 detail_element.innerHTML = `
-                    <div class="col-12 row detail">
-                        <div class="col-sm-2 d-sm-block d-none icon">
+                <div class="col-12 row detail">
+                    <div class="col-sm-2 d-sm-block d-none icon">
                         <img src="{% static 'img/icon.png' %}" class="img-fluid">
-                        </div>
-                        <div class="col-sm-6 col-7 description">
+                    </div>
+                    <div class="col-sm-6 col-7 description">
                         <div class="col-12 class">${item.category__c_name}</div>
                         <div class="col-12 tag">tag</div>
                         <div class="col-sm-12 d-sm-block d-none info">${item.e_desc}</div>
-                        </div>
-                        <div class="col-sm-4 col-5 row amount">
-                        <p class="col-12 text-right" style="text-align: right;">${item.e_amount}</p>
-                        </div>
                     </div>
-                    `;
+                    <div class="col-sm-4 col-5 row amount">
+                        <p class="col-12 text-right" style="text-align: right;">${item.e_amount}</p>
+                    </div>
+                </div>
+                `;
                 daily_element.appendChild(detail_element);
             }
             container.appendChild(daily_element);
@@ -195,7 +211,7 @@
             },
             success: function (response) {
                 if (response.success) {
-                    ProcessingSumData(response.result, selected);
+                    processingSumData(response.result, selected);
                 } else {
                     alert(response.errors);
                 }
@@ -206,7 +222,7 @@
         });
     }
 
-    function ProcessingSumData(raw_data, selected_month) {
+    function processingSumData(raw_data, selected_month) {
         let container = document.getElementById('summary-detail');
         container.innerHTML = '';
         let summary_element = document.createElement('div');
@@ -215,7 +231,7 @@
         container.appendChild(summary_element);
 
         let total = 0
-        // 显示各个类别花费
+        // 顯示各類別的花費總額
         let ul_element = document.createElement('ul');
         for (let i = 0; i < raw_data.length; i++) {
             let item = raw_data[i];
@@ -225,13 +241,45 @@
             total += item.total_spent;
         };
         container.appendChild(ul_element);
-
         container = document.getElementById('summary');
         container.innerHTML = '';
         summary_element = document.createElement('div');
         summary_element.classList.add('col-12', 'tip');
         summary_element.innerHTML = `總花費：${total}`;
         container.appendChild(summary_element);
+    }
+
+    function saveInsertModalData() {
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "{% url 'detail' %}",
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            data: $("#edit-form").serialize(),
+            success: function (response) {
+                if (response.success) {
+                    // Close the modal
+                    let modal = document.getElementById('insertModal');
+                    let bootstrapModal = bootstrap.Modal.getInstance(modal);
+                    bootstrapModal.hide();
+                    let selected = $('#search-text').val();
+                    getDetailData(selected);
+                    getSumDetailData(selected);
+                    clearInsertForm();
+                } else {
+                    alert(response.errors);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("發生錯誤:" + error);
+            }
+        });
+    }
+
+    function clearInsertForm() {
+        $('#{{ form.current_user.auto_id }}').val('{{current_user}}');
+        $('#{{ form.amount.auto_id }}').val('');
+        $('#{{ form.desc.auto_id }}').val('');
 
     }
 </script>
