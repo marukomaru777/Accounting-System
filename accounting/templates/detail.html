@@ -59,7 +59,8 @@
                             {% include './form-expense.html' %}
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-dark" id="modal-insert-btn">新增</button>
+                            <button type="button" class="btn btn-dark" id="modal-insert-btn"
+                                data-dismiss="modal">新增</button>
                         </div>
                     </div>
                 </div>
@@ -257,10 +258,6 @@
             data: $("#edit-form").serialize(),
             success: function (response) {
                 if (response.success) {
-                    // Close the modal
-                    let modal = document.getElementById('insertModal');
-                    let bootstrapModal = bootstrap.Modal.getInstance(modal);
-                    bootstrapModal.hide();
                     let selected = $('#search-text').val();
                     getDetailData(selected);
                     getSumDetailData(selected);
@@ -279,7 +276,6 @@
         $('#{{ form.current_user.auto_id }}').val('{{current_user}}');
         $('#{{ form.amount.auto_id }}').val('');
         $('#{{ form.desc.auto_id }}').val('');
-
     }
 </script>
 {% endblock %}

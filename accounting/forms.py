@@ -64,7 +64,9 @@ class ExpenseForm(forms.Form):
     category = forms.CharField(required=True, label="分類")
     date = forms.DateField(required=True, label="日期")
     amount = forms.FloatField(required=True, label="金額")
-    desc = forms.CharField(label="備註", widget=forms.Textarea(attrs={"rows": 3}))
+    desc = forms.CharField(
+        required=False, label="備註", widget=forms.Textarea(attrs={"rows": 3})
+    )
 
     def __init__(self, *args, **kwargs):
         super(ExpenseForm, self).__init__(*args, **kwargs)
