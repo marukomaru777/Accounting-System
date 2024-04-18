@@ -14,7 +14,8 @@
                     <input class="form-check-input" type="radio" name="type" id="c_type_income" value="+">
                     <label class="form-check-label" for="c_type_income">收入</label>
                 </div>
-                <select class="form-select" aria-label="Default select example" id="category-select" name="category">
+                <select class="form-select form-control" aria-label="Default select example" id="category-select"
+                    name="category">
                     <option selected>請選擇該筆分類</option>
                 </select>
                 <span class="errMsg" id="cat-errMsg"></span>
@@ -51,10 +52,7 @@
         $('#{{ form.current_user.auto_id }}').val('{{current_user}}');
         let raw_data = getCategory();
         let default_type = '-';
-        $("[name=c_type]").val([default_type]);
-        $('input[type=radio][name=c_type]').change(function () {
-            filterCategoryDdl(this.value, raw_data);
-        });
+        $('input[type=radio][name=type]').filter('[value="' + default_type + '"]').prop('checked', true);
         filterCategoryDdl(default_type, raw_data);
         $('#{{form.date.auto_id}}').datepicker({
             format: "yyyy-mm-dd",
@@ -66,6 +64,9 @@
             language: 'zh-TW'//中文化
         })
         $('#{{form.date.auto_id}}').datepicker('update', (new Date()));
+        $('input[type=radio][name=type]').change(function () {
+            filterCategoryDdl(this.value, raw_data);
+        });
     });
     function getCategory() {
         let cat_data;
