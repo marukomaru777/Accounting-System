@@ -10,8 +10,8 @@
 {% block body %}
 <div class="row">
     <!-- Right Container -->
-    <div class="col-sm-3 col-12">
-        <div class="col-9">
+    <div class="col-sm-2 col-12">
+        <div>
             <div class="input-group date" id="datepicker-search">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="prev-month-btn">&lt;</button>
@@ -24,7 +24,7 @@
         </div>
         <!-- summary by class -->
         <div class="col-sm-12 d-sm-block d-none side" id="summary-detail">
-            <div class="col-12 tip">各個類別花費</div>
+            <div class="tip">各個類別花費</div>
         </div>
 
         <!-- summary -->
@@ -36,7 +36,7 @@
     </div>
 
     <!-- Left Container -->
-    <div class="col-sm-9 col-12">
+    <div class="col-sm-10 col-12">
         <!-- tool bar -->
         <div class="col-12 row" style="margin: 0; padding-left: 0;">
             <div class="col-sm-12 d-sm-block d-none text-right">
@@ -44,7 +44,6 @@
                 <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#insertModal">
                     新增
                 </button>
-
                 <!-- Modal -->
                 <div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="insertModalLabel"
                     aria-hidden="true">

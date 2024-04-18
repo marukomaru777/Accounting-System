@@ -7,3 +7,7 @@
 .header {
     background-color: white;
 }
+
+#nav {
+    z-index: 9999;
+}

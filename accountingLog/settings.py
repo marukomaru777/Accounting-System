@@ -136,3 +136,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # one hour in seconds
 SESSION_COOKIE_AGE = 3600
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.127.0.0.1",
+]
