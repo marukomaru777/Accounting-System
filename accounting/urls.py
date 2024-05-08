@@ -12,4 +12,6 @@ urlpatterns = [
     path("getSumDetail", views.getSumDetail, name="getSumDetail"),
     path("data", views.data, name="data"),
     path("getCategory", views.getCategory, name="getCategory"),
+    path("delExpense", views.delExpense, name="delExpense"),
+    path("getEditExpense", views.getEditExpense, name="getEditExpense"),
 ]

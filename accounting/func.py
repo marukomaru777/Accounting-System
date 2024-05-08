@@ -63,10 +63,23 @@ def GetExpenses(acc, year_month):
     date_from, date_to = get_month_range(year_month)
     result = (
         Expenses.objects.select_related("category")
-        .values("category__c_name", "e_date", "e_desc", "e_type", "e_amount")
+        .values("category__c_name", "e_date", "e_desc", "e_type", "e_amount", "e_id")
         .filter(u_account_id=acc, e_date__range=[date_from, date_to])
     )
+    for item in result:
+        # 將 e_amount 格式化為帶千分逗點的字符串
+        item["e_amount"] = format(int(item["e_amount"]), ",")
+
     return list(result)
+
+
+def GetEditExpense(acc, e_id):
+    result = (
+        Expenses.objects.values(
+            "category", "e_date", "e_desc", "e_type", "e_amount", "e_id"
+        ).filter(u_account_id=acc, e_id=e_id)
+    ).first()
+    return result
 
 
 def GetSumExpenses(acc, year_month):
@@ -77,6 +90,10 @@ def GetSumExpenses(acc, year_month):
         .annotate(total_spent=Sum("e_amount"))
         .filter(u_account_id=acc, e_date__range=[date_from, date_to])
     )
+
+    for item in grouped_expenses:
+        # 將 total_spent 格式化為帶千分逗點的字符串
+        item["total_spent"] = format(int(item["total_spent"]), ",")
     return list(grouped_expenses)
 
 
@@ -87,18 +104,35 @@ def GetCategory(acc):
     return list(category)
 
 
-def InsertExpense(model):
+def SaveExpense(model):
     try:
         with transaction.atomic():
-            new_expense = Expenses(
-                u_account=CustomUser.objects.get(account=model["current_user"]),
-                category=Category.objects.get(c_id=model["category"]),
-                e_date=model["date"],
-                e_type=model["type"],
-                e_amount=model["amount"],
-                e_desc=model["desc"],
-            )
+            if model["e_id"] == "insert":
+                expense = Expenses(
+                    u_account=CustomUser.objects.get(account=model["current_user"]),
+                    category=Category.objects.get(c_id=model["category"]),
+                    e_date=model["date"],
+                    e_type=model["type"],
+                    e_amount=model["amount"],
+                    e_desc=model["desc"],
+                )
+            else:
+                expense = Expenses.objects.get(e_id=model["e_id"])
+                expense.category = Category.objects.get(c_id=model["category"])
+                expense.e_date = model["date"]
+                expense.e_type = model["type"]
+                expense.e_amount = model["amount"]
+                expense.e_desc = model["desc"]
             # Save the user to the database
-            new_expense.save()
+            expense.save()
+    except Exception as e:
+        raise Exception("{}".format(e))
+
+
+def DeleteExpense(id, acc):
+    try:
+        with transaction.atomic():
+            expense = Expenses.objects.get(e_id=id, u_account=acc)
+            expense.delete()
     except Exception as e:
         raise Exception("{}".format(e))

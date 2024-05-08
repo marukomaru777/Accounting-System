@@ -45,15 +45,22 @@
                 <span class="errMsg" id="desc-errMsg"></span>
             </td>
         </tr>
+        <tr style="display: none;">
+            <td width="30%">ID</td>
+            <td width="70%">
+                {{form.e_id}}
+                <span class="errMsg" id="desc-errMsg"></span>
+            </td>
+        </tr>
     </form>
 </table>
 <script>
+    const category_raw_data = getCategory();
     $(function () {
         $('#{{ form.current_user.auto_id }}').val('{{current_user}}');
-        let raw_data = getCategory();
         let default_type = '-';
         $('input[type=radio][name=type]').filter('[value="' + default_type + '"]').prop('checked', true);
-        filterCategoryDdl(default_type, raw_data);
+        filterCategoryDdl(default_type);
         $('#{{form.date.auto_id}}').datepicker({
             format: "yyyy-mm-dd",
             autoclose: true,//選擇日期後就會自動關閉
@@ -65,9 +72,11 @@
         })
         $('#{{form.date.auto_id}}').datepicker('update', (new Date()));
         $('input[type=radio][name=type]').change(function () {
-            filterCategoryDdl(this.value, raw_data);
+            filterCategoryDdl(this.value);
         });
     });
+
+    // 取得使用者的分類清單
     function getCategory() {
         let cat_data;
         $.ajax({
@@ -91,8 +100,10 @@
         });
         return cat_data;
     }
-    function filterCategoryDdl(query, data) {
-        let filteredData = data.filter(function (item) {
+
+    // 依照花費type(+, -)篩選分類選項
+    function filterCategoryDdl(query) {
+        let filteredData = category_raw_data.filter(function (item) {
             return item.c_type.includes(query);
         });
         let dropdownItems = document.getElementById('category-select');

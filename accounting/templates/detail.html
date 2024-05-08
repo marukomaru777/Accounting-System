@@ -10,7 +10,7 @@
 {% block body %}
 <div class="row">
     <!-- Right Container -->
-    <div class="col-sm-2 col-12">
+    <div class="col-md-2 col-12">
         <div>
             <div class="input-group date" id="datepicker-search">
                 <div class="input-group-append">
@@ -23,7 +23,7 @@
             </div>
         </div>
         <!-- summary by class -->
-        <div class="col-sm-12 d-sm-block d-none side" id="summary-detail">
+        <div class="col-md-12 d-sm-block d-none side" id="summary-detail">
             <div class="tip">各個類別花費</div>
         </div>
 
@@ -36,37 +36,37 @@
     </div>
 
     <!-- Left Container -->
-    <div class="col-sm-10 col-12">
+    <div class="col-md-10 col-12">
         <!-- tool bar -->
-        <div class="col-12 row" style="margin: 0; padding-left: 0;">
+        <div class="col-12 row" style="margin: 0;">
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#insertModal">
+            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#editModal" data-title="新增" data-id="insert">
                 新增
             </button>
-
-            <!-- Modal -->
-            <div class="modal fade" id="insertModal" tabindex="-1" role="dialog" aria-labelledby="insertModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="insertModalLabel">新增收支</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            {% include './form-expense.html' %}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-dark" id="modal-insert-btn"
-                                data-dismiss="modal">新增</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
         <div id="daily-detail">
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% include './form-expense.html' %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" id="modal-insert-btn"
+                    data-dismiss="modal">新增</button>
+            </div>
         </div>
     </div>
 </div>
@@ -74,6 +74,20 @@
 {% block js_script %}
 <script>
     $(function () {
+        $('#editModal').on('show.bs.modal', function (event) {
+            let button = $(event.relatedTarget)
+                , title = button.data('title')
+                , e_id = button.data('id')
+                , modal = $(this);
+            modal.find('.modal-title').text(title);
+            if (e_id == "insert"){
+                clearInsertForm();
+            }
+            else{
+                getEditData(e_id, modal);
+            }
+        })
+
         $('#datepicker-search').datepicker({
             format: "yyyy-mm", //設定格式為2019-04
             autoclose: true,//選擇日期後就會自動關閉
@@ -101,10 +115,11 @@
         });
 
         $('#modal-insert-btn').click(function () {
-            saveInsertModalData();
+            saveeditModalData();
         });
     });
 
+    // 取得右邊花費明細
     function getDetailData(selected) {
         $.ajax({
             type: "POST",
@@ -128,6 +143,7 @@
         });
     }
 
+    // 將取得花費明細資料轉為html
     function processingData(raw_data) {
         // 創建一個空物件來存放分群後的資料
         let grouped_data = {};
@@ -146,10 +162,11 @@
             grouped_data[e_date].data.push(current_item);
             // 更新每日總和 
             if (current_item.e_type == '+') {
-                grouped_data[e_date].totalValue += parseInt(current_item.e_amount);
+                // 替換掉千分逗點
+                grouped_data[e_date].totalValue += parseInt(current_item.e_amount.replace(/,/g, ''));
             }
             else {
-                grouped_data[e_date].totalValue -= parseInt(current_item.e_amount);
+                grouped_data[e_date].totalValue -= parseInt(current_item.e_amount.replace(/,/g, ''));
             }
         }
         // 對分群後的資料進行排序，依照 e_date 欄位遞減排序 
@@ -170,35 +187,58 @@
             summary_element.classList.add('col-12', 'row', 'sum');
             summary_element.innerHTML = `
             <div class="col-4">${date_data}</div>
-            <div class="col-8" style="text-align: right;">Total: ${grouped_data[date_data].totalValue}</div>
+            <div class="col-8" style="text-align: right;">Total: ${numberComma(grouped_data[date_data].totalValue)}</div>
             `;
             daily_element.appendChild(summary_element);
 
             for (let item of grouped_data[date_data].data) {
                 // 这里的 item 就是数组中的每个对象
+                let detail_list_element = document.createElement('div');
+                detail_list_element.classList.add('col-12', 'row', 'detail-list');
+
+
                 let detail_element = document.createElement('div');
-                detail_element.classList.add('col-12', 'row', 'detail-list');
-                detail_element.innerHTML = `
-                <div class="col-12 row detail">
-                    <div class="col-sm-2 d-sm-block d-none icon">
+                detail_element.classList.add('col-12', 'row', 'detail');
+
+                let html_element = `
+                    <div class="col-md-2 col-2 d-flex justify-content-center align-items-center icon">
                         <img src="{% static 'img/icon.png' %}" class="img-fluid">
                     </div>
-                    <div class="col-sm-6 col-7 description">
+                    <div class="col-md-5 col-4 description">
                         <div class="col-12 class">${item.category__c_name}</div>
-                        <div class="col-12 tag">tag</div>
-                        <div class="col-sm-12 d-sm-block d-none info">${item.e_desc}</div>
+                        <!-- <div class="col-12 tag">tag</div> -->
+                        <div class="col-12 info">${item.e_desc}</div>
                     </div>
-                    <div class="col-sm-4 col-5 row amount">
+                    <div class="col-md-3 col-2 row amount">
                         <p class="col-12 text-right" style="text-align: right;">${item.e_amount}</p>
                     </div>
-                </div>
+                    <div class="col-md-2 col-4 d-flex justify-content-center align-items-center edit-btn">
+                        <div class="text-center">
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#editModal" data-title="編輯" data-id="${item.e_id}">
+                                編輯
+                            </button>
+                            <button class="btn btn-outline-dark" onclick="deleteData(${item.e_id})">
+                                刪除
+                            </button>
+                        </div>
+                    </div>
                 `;
-                daily_element.appendChild(detail_element);
+                detail_element.innerHTML = html_element;
+                detail_list_element.appendChild(detail_element);
+                daily_element.appendChild(detail_list_element);
             }
             container.appendChild(daily_element);
         }
     }
 
+    // 將數字轉成千分位逗號
+    function numberComma(num){
+        let comma=/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g
+        return num.toString().replace(comma, ',')
+    }
+
+    // 取得左邊花費總和
     function getSumDetailData(selected) {
         $.ajax({
             type: "POST",
@@ -222,6 +262,7 @@
         });
     }
 
+    // 將取得花費總和資料轉為html
     function processingSumData(raw_data, selected_month) {
         let container = document.getElementById('summary-detail');
         container.innerHTML = '';
@@ -238,18 +279,19 @@
             let li_element = document.createElement('li');
             li_element.innerText = `${item.category__c_name}：${item.total_spent}`;
             ul_element.appendChild(li_element);
-            total += item.total_spent;
+            total += parseInt(item.total_spent.replace(/,/g, ''));
         };
         container.appendChild(ul_element);
         container = document.getElementById('summary');
         container.innerHTML = '';
         summary_element = document.createElement('div');
         summary_element.classList.add('col-12', 'tip');
-        summary_element.innerHTML = `總花費：${total}`;
+        summary_element.innerHTML = `總花費：${numberComma(total)}`;
         container.appendChild(summary_element);
     }
 
-    function saveInsertModalData() {
+    // 儲存資料
+    function saveeditModalData() {
         $.ajax({
             type: "POST",
             async: false,
@@ -272,10 +314,73 @@
         });
     }
 
+    // 刪除花費資料
+    function deleteData(e_id){
+        if (confirm("確定要刪除此筆消費嗎？")){
+            $.ajax({
+                type: "POST",
+                async: false,
+                url: "{% url 'delExpense' %}",
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: {
+                    "current_user": "{{ current_user }}",
+                    "e_id": e_id,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        let selected = $('#search-text').val();
+                        getDetailData(selected);
+                        getSumDetailData(selected);
+                    } else {
+                        alert(response.errors);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert("發生錯誤:" + error);
+                }
+            });
+        }
+    }
+
+    // 取得欲編輯的資料
+    function getEditData(e_id, modal) {
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "{% url 'getEditExpense' %}",
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            data: {
+                "current_user": "{{ current_user }}",
+                "e_id": e_id,
+            },
+            success: function (response) {
+                if (response.success) {
+                    let data = response.result;
+                    $('input[type=radio][name=type]').filter('[value="' + data.e_type + '"]').prop('checked', true);
+                    modal.find('#{{form.e_id.auto_id}}').val(data.e_id);
+                    modal.find('#{{form.amount.auto_id}}').val(data.e_amount);
+                    modal.find('#{{form.date.auto_id}}').datepicker('update', data.e_date);
+                    modal.find('#{{form.desc.auto_id}}').val(data.e_desc);
+                    filterCategoryDdl(data.e_type);
+                    document.getElementById('category-select').value = data.category;
+                } else {
+                    alert(response.errors);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("發生錯誤:" + error);
+            }
+        });
+    }
+
+    // 將modal頁面中的輸入框資料清除
     function clearInsertForm() {
         $('#{{ form.current_user.auto_id }}').val('{{current_user}}');
         $('#{{ form.amount.auto_id }}').val('');
         $('#{{ form.desc.auto_id }}').val('');
+        $('input[type=radio][name=type]').filter('[value="-"]').prop('checked', true);
+        $('#category-select').selectedIndex='-';
+        filterCategoryDdl('-');
     }
 </script>
 {% endblock %}

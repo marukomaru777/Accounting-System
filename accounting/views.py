@@ -41,7 +41,7 @@ def detail(request):
             try:
                 form = ExpenseForm(request.POST)
                 if form.is_valid():
-                    InsertExpense(form.cleaned_data)
+                    SaveExpense(form.cleaned_data)
                     return JsonResponse({"success": True})
             except Exception as e:
                 return JsonResponse({"success": False, "errors": str(e)})
@@ -109,6 +109,18 @@ def getDetail(request):
     return JsonResponse({"success": False})
 
 
+def getEditExpense(request):
+    try:
+        if request.method == "POST":
+            detail = GetEditExpense(
+                request.POST.get("current_user"), request.POST.get("e_id")
+            )
+            return JsonResponse({"success": True, "result": detail})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+    return JsonResponse({"success": False})
+
+
 def getSumDetail(request):
     try:
         if request.method == "POST":
@@ -126,6 +138,16 @@ def getCategory(request):
         if request.method == "POST":
             category = GetCategory(request.POST.get("current_user"))
             return JsonResponse({"success": True, "result": category})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+    return JsonResponse({"success": False})
+
+
+def delExpense(request):
+    try:
+        if request.method == "POST":
+            DeleteExpense(request.POST.get("e_id"), request.POST.get("current_user"))
+            return JsonResponse({"success": True, "result": "刪除成功"})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
     return JsonResponse({"success": False})

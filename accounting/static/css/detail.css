@@ -24,53 +24,82 @@
     border: solid 1px #ccc;
 }
 
-.daily-list .sum {
+.sum {
     background-color: #ccc;
     margin: 0px;
     padding: 0px;
     font-size: 16px;
 }
 
-.daily-list .detail-list {
+.detail-list {
     margin: 0px;
     padding: 0px;
 }
 
-.daily-list .detail-list .detail {
+.detail {
     margin: 0px;
     padding: 0px;
 }
 
-.daily-list .detail-list .icon {
-    padding: 0px 10px;
+.icon {
+    /* padding: 0px 10px; */
     text-align: center;
 }
 
-.daily-list .detail-list .description {
-    padding: 0px 10px;
+.description {
+    /* padding: 0px 10px; */
 }
 
-.daily-list .detail-list .description .class {
-    padding: 0px 10px;
+.class {
+    /* padding: 0px 10px; */
     font-size: 20px;
 }
 
-.daily-list .detail-list .description .info {
-    padding: 0px 10px;
+.info {
+    /* padding: 0px 10px; */
     font-size: 16px;
 }
 
-.daily-list .detail-list .description .tag {
+/* .tag {
     padding: 0px 10px;
     font-size: 14px;
-}
+} */
 
-.daily-list .detail-list .amount {
+.amount {
     margin: 0px;
     display: flex;
-    /* ★ */
     align-items: center;
-    /* ★ */
-    padding: 0px 10px;
+    padding: 0px 0px;
     font-size: 25px;
+}
+
+.edit-btn {
+    padding: 0px;
+    margin: 0px;
+}
+
+@media (max-device-width: 640px) {
+    .icon {
+        padding: 0px;
+    }
+
+    .description {
+        padding: 0px;
+    }
+
+    .class {
+        font-size: 18px;
+    }
+
+    /* .tag {
+        font-size: 12px;
+    } */
+
+    .info {
+        font-size: 12px;
+    }
+
+    .amount {
+        font-size: 20px;
+    }
 }
