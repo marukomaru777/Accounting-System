@@ -86,7 +86,9 @@ def GetSumExpenses(acc, year_month):
     date_from, date_to = get_month_range(year_month)
     grouped_expenses = (
         Expenses.objects.select_related("category")
-        .values("category__c_name")  # 通过外键关联的模型名加上字段名来访问相关字段
+        .values(
+            "category__c_name", "e_type"
+        )  # 通过外键关联的模型名加上字段名来访问相关字段
         .annotate(total_spent=Sum("e_amount"))
         .filter(u_account_id=acc, e_date__range=[date_from, date_to])
     )
