@@ -59,7 +59,7 @@ class RegistrationForm(forms.Form):
 
 
 class ExpenseForm(forms.Form):
-    e_id = forms.CharField(required=False)
+    e_id = forms.CharField(required=True)
     current_user = forms.CharField(widget=forms.HiddenInput)
     type = forms.CharField(required=True, label="收支")
     category = forms.CharField(required=True, label="分類")

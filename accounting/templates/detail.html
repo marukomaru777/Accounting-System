@@ -65,7 +65,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-dark" id="modal-insert-btn"
-                    data-dismiss="modal">新增</button>
+                    data-dismiss="modal">儲存</button>
             </div>
         </div>
     </div>
@@ -74,6 +74,8 @@
 {% block js_script %}
 <script>
     $(function () {
+
+        // modal
         $('#editModal').on('show.bs.modal', function (event) {
             let button = $(event.relatedTarget)
                 , title = button.data('title')
@@ -82,12 +84,14 @@
             modal.find('.modal-title').text(title);
             if (e_id == "insert"){
                 clearInsertForm();
+                modal.find('#{{form.e_id.auto_id}}').val(e_id);
             }
             else{
                 getEditData(e_id, modal);
             }
         })
 
+        // datepicker
         $('#datepicker-search').datepicker({
             format: "yyyy-mm", //設定格式為2019-04
             autoclose: true,//選擇日期後就會自動關閉
@@ -114,6 +118,7 @@
             $('#datepicker-search').datepicker('update', current_date);
         });
 
+        // btn
         $('#modal-insert-btn').click(function () {
             saveeditModalData();
         });
@@ -210,7 +215,7 @@
                         <div class="col-12 info">${item.e_desc}</div>
                     </div>
                     <div class="col-md-3 col-2 row amount">
-                        <p class="col-12 text-right" style="text-align: right;">${item.e_amount}</p>
+                        <p class="col-12 text-right" style="text-align: right;">${item.e_type.replace('+', '')}${item.e_amount}</p>
                     </div>
                     <div class="col-md-2 col-4 d-flex justify-content-center align-items-center edit-btn">
                         <div class="text-center">
@@ -266,27 +271,47 @@
     function processingSumData(raw_data, selected_month) {
         let container = document.getElementById('summary-detail');
         container.innerHTML = '';
-        let summary_element = document.createElement('div');
-        summary_element.classList.add('col-12', 'tip');
-        summary_element.innerHTML = `各個類別花費`;
-        container.appendChild(summary_element);
 
-        let total = 0
+        let total = 0,
+            spend_tot = 0,
+            income_tot = 0;
+
+        let ul_element_spend = document.createElement('ul'),
+            ul_element_income = document.createElement('ul'),
+            span_element_spend = document.createElement('div'),
+            span_element_income = document.createElement('div');
+        span_element_spend.classList.add('col-12', 'tip');
+        span_element_income.classList.add('col-12', 'tip');
+
         // 顯示各類別的花費總額
-        let ul_element = document.createElement('ul');
         for (let i = 0; i < raw_data.length; i++) {
-            let item = raw_data[i];
-            let li_element = document.createElement('li');
-            li_element.innerText = `${item.category__c_name}：${item.total_spent}`;
-            ul_element.appendChild(li_element);
-            total += parseInt(item.total_spent.replace(/,/g, ''));
+            let item = raw_data[i],
+                li_element = document.createElement('li');
+
+            li_element.innerText = `${item.category__c_name}：${item.e_type == '-' ? '-' : ''}${item.total_spent}`;
+            if (item.e_type == '+'){
+                ul_element_income.appendChild(li_element);
+                income_tot += parseInt(item.total_spent.replace(/,/g, ''));
+            }else{
+                ul_element_spend.appendChild(li_element);
+                spend_tot += parseInt(item.total_spent.replace(/,/g, ''));
+            }
         };
-        container.appendChild(ul_element);
+        span_element_income.innerHTML = `收入小計：${numberComma(income_tot)}`;
+        span_element_spend.innerHTML = `支出小計：-${numberComma(spend_tot)}`;
+
+        container.appendChild(span_element_income);
+        container.appendChild(ul_element_income);
+        
+        container.appendChild(span_element_spend);
+        container.appendChild(ul_element_spend);
+        
+        total = income_tot - spend_tot;
         container = document.getElementById('summary');
         container.innerHTML = '';
         summary_element = document.createElement('div');
         summary_element.classList.add('col-12', 'tip');
-        summary_element.innerHTML = `總花費：${numberComma(total)}`;
+        summary_element.innerHTML = `Total：${numberComma(total)}`;
         container.appendChild(summary_element);
     }
 
@@ -356,13 +381,13 @@
             success: function (response) {
                 if (response.success) {
                     let data = response.result;
-                    $('input[type=radio][name=type]').filter('[value="' + data.e_type + '"]').prop('checked', true);
+                    modal.find('input[type=radio][name=type]').filter('[value="' + data.e_type + '"]').prop('checked', true);
                     modal.find('#{{form.e_id.auto_id}}').val(data.e_id);
                     modal.find('#{{form.amount.auto_id}}').val(data.e_amount);
                     modal.find('#{{form.date.auto_id}}').datepicker('update', data.e_date);
                     modal.find('#{{form.desc.auto_id}}').val(data.e_desc);
                     filterCategoryDdl(data.e_type);
-                    document.getElementById('category-select').value = data.category;
+                    modal.find('#category-select').value = data.category;
                 } else {
                     alert(response.errors);
                 }
