@@ -14,4 +14,5 @@ urlpatterns = [
     path("getCategory", views.getCategory, name="getCategory"),
     path("delExpense", views.delExpense, name="delExpense"),
     path("getEditExpense", views.getEditExpense, name="getEditExpense"),
+    path("confirm/", views.confirmRegistration),
 ]

@@ -140,3 +140,18 @@ SESSION_COOKIE_AGE = 3600
 CSRF_TRUSTED_ORIGINS = [
     "https://*.127.0.0.1",
 ]
+# 設定email
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", default="host user")
+# DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", default="user")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", default="host pwd")
+EMAIL_USE_TLS = True  # TLS加密
+EMAIL_USE_SSL = False  # SSL加密
+
+# 註冊有效天數
+CONFIRM_DAYS = 7
+
+# 網站網址
+WEB_URL = os.environ.get("WEB_URL", default="your web url")

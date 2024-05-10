@@ -97,6 +97,16 @@ def chkAcc(request):
         return JsonResponse({"success": False, "errors": str(e)})
 
 
+def confirmRegistration(request):
+    try:
+        code = request.GET.get("code", None)
+        msg = ConfirmRegistration(code)
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+    form = LoginForm()
+    return render(request, "confirm.html", {"message": msg, "form": form})
+
+
 def getDetail(request):
     try:
         if request.method == "POST":
