@@ -7,11 +7,11 @@ from users.models import CustomUser
 
 class Category(models.Model):
     c_id = models.BigAutoField(primary_key=True)
-    u_account = models.ForeignKey(
+    username = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
         related_name="user_category",
-        to_field="account",
+        to_field="username",
     )
     c_type = models.CharField(max_length=2)
     c_name = models.CharField(max_length=50)
@@ -23,11 +23,11 @@ class Category(models.Model):
 
 class Expenses(models.Model):
     e_id = models.BigAutoField(primary_key=True)
-    u_account = models.ForeignKey(
+    username = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
         related_name="user_expenses",
-        to_field="account",
+        to_field="username",
     )
     category = models.ForeignKey(
         Category,

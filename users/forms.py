@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ValidationError
-from .models import CustomUser
+from django.contrib.auth.forms import UserCreationForm
+from users.models import CustomUser
 
 
 class LoginForm(forms.Form):
@@ -15,44 +16,25 @@ class LoginForm(forms.Form):
             visible.field.widget.attrs["class"] = "form-control"
 
 
-class RegistrationForm(forms.Form):
-    account = forms.EmailField(required=True, label="會員帳號")
-    password = forms.CharField(
-        required=True, label="密碼", widget=forms.PasswordInput()
-    )
-    confirm_password = forms.CharField(
-        required=True, label="確認密碼", widget=forms.PasswordInput()
-    )
+class RegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
+
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
 
-    def clean_account(self):
-        account = self.cleaned_data["account"]
-        if CustomUser.objects.filter(account=account).exists():
-            raise ValidationError("帳號已經存在 請重新登入")
-        return account
+    class Meta:
+        model = CustomUser  # this is the "YourCustomUser" that you imported at the top of the file
+        fields = ("username", "password1", "password2")
 
-    def clean_password(self):
-        password = self.cleaned_data.get("password")
-
-        # 检查密码长度是否大于等于6
-        if len(password) < 7 and (
-            not any(char.isdigit() for char in password)
-            or not any(char.isalpha() for char in password)
-        ):
-            raise ValidationError(
-                "密碼需介於 8-16 碼需有 1 個以上英文字且有 1 個以上數字"
+    def save(self, commit=True):
+        if not commit:
+            raise NotImplementedError(
+                "Can't create User without committing to database"
             )
-        return password
-
-    def clean_confirm_password(self):
-        password = self.cleaned_data.get("password")
-        confirm_password = self.cleaned_data.get("confirm_password")
-
-        if password and confirm_password and password != confirm_password:
-            raise ValidationError("密碼 與 確認密碼 不一致")
-
-        return confirm_password
+        user = CustomUser.objects.create_user(
+            username=self.cleaned_data["username"],
+            password=self.cleaned_data["password1"],
+        )
+        return user

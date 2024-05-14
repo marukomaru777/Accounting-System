@@ -82,7 +82,7 @@
         $.ajax({
             type: "POST",
             async: false,
-            url: "{% url 'getCategory' %}",
+            url: "{% url 'accounting:getCategory' %}",
             headers: { 'X-CSRFToken': getCookie('csrftoken') },
             data: {
                 "current_user": "{{ current_user }}",

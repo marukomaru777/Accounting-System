@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Template</title>
+    <style>
+        .confirm-btn {
+            display: inline-block;
+            padding: 10px 0px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            width: 100%;
+            background-color: #343a40;
+        }
+
+        .foot-container {
+            background-color: darkgray;
+            color: lightgray;
+            font-size: 10px;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <p>感謝註冊 I Need Money，祝您早日財富自由，不要屈服於資本主義！</p>
+    <div style="text-align: center;">
+        <a href="{{ confirm_url }}" class="confirm-btn" style="color: #fff">點此完成註冊</a>
+    </div>
+    <p>此連結有效期限為{{ confirm_days }}天</p>
+    <div class="foot-container">
+        <p><b>I Need Money</b></p>
+        <p>這封信是寄到 {{ email }}。<br>
+        您會收到這封電郵是由於您使用這個電郵地址註冊成為 I Need Money 的會員。</p>
+    </div>
+</body>
+</html>

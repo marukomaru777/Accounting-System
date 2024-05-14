@@ -5,15 +5,15 @@ $(function () {
             $.ajax({
                 type: "POST",
                 async: false,
-                url: "{% url 'login' %}",
+                url: api_login,
                 headers: { 'X-CSRFToken': getCookie('csrftoken') },
                 data: $(this).serialize(),
                 success: function (response) {
                     if (response.success) {
-                        window.location.href = '{% url "detail" %}';
+                        window.location.href = url_index;
                     } else {
-                        alert(response.errors);
-                        $("#{{form.password.auto_id}}").val("");
+                        $("#pwd-errMsg").text(response.errors);
+                        $("#id_password").val("");
                     }
                 },
                 error: function (xhr, status, error) {
@@ -23,14 +23,15 @@ $(function () {
         }
     });
 })
+
 function isValidate() {
     flag = true;
-    if ($(`#{{form.account.auto_id}}`).val().length == 0) {
-        $("#acc-errMsg").val("請輸入Email");
+    if ($(`#id_username`).val().length == 0) {
+        $("#acc-errMsg").text("請輸入Email");
         flag = false;
     }
-    if ($(`#{{form.password.auto_id}}`).val().length == 0) {
-        $("#pwd-errMsg").val("請輸入密碼");
+    if ($(`#id_password`).val().length == 0) {
+        $("#pwd-errMsg").text("請輸入密碼");
         flag = false;
     }
     return flag

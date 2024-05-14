@@ -10,8 +10,9 @@
     <tr style="height:60px">
         <td width="30%" class="section-input">會員帳號</td>
         <td width="70%" class="section-input">
-            {{form.account}}
-            {% for error in form.account.errors %}
+            <!-- {{form.username}} -->
+            <input type="email" name="username" maxlength="320" class="form-control" required="" id="id_username" placeholder="請輸入E-MAIL">
+            {% for error in form.username.errors %}
             <span class="errMsg">{{ error }}</span>
             {% endfor %}
             <span class="errMsg" id="acc-errMsg"></span>
@@ -20,8 +21,9 @@
     <tr style="height:60px">
         <td width="30%" class="section-input">密碼</td>
         <td width="70%" class="section-input">
-            {{form.password}}
-            {% for error in form.password.errors %}
+            <!-- {{form.password1}} -->
+            <input type="password" name="password1" class="form-control" required="" id="id_password1" placeholder="請輸入密碼">
+            {% for error in form.password1.errors %}
             <span class="errMsg">{{ error }}</span>
             {% endfor %}
             <span class="errMsg" id="pwd-errMsg"></span>
@@ -30,8 +32,9 @@
     <tr style="height:60px">
         <td width="30%" class="section-input">確認密碼</td>
         <td width="70%" class="section-input">
-            {{form.confirm_password}}
-            {% for error in form.confirm_password.errors %}
+            <!-- {{form.password2}} -->
+            <input type="password" name="password2" class="form-control" required="" id="id_password2" placeholder="請再次輸入密碼">
+            {% for error in form.password2.errors %}
             <span class="errMsg">{{ error }}</span>
             {% endfor %}
             <span class="errMsg" id="pwd2-errMsg"></span>
@@ -49,91 +52,12 @@
 
 {% block js_script %}
 {{ block.super }}
+<!-- define required variables in template -->
 <script>
-    $(function () {
-        $(`#{{form.password.auto_id}}`).change(function () {
-            let passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,16}$/;
-            if (!passwordRegex.test($("#{{form.password.auto_id}}").val())) {
-                $('#pwd-errMsg').text("密碼需介於 8-16 碼需有 1 個以上英文字且有 1 個以上數字");
-            } else {
-                $('#pwd-errMsg').text("");
-            }
-        });
-
-        $(`#{{form.confirm_password.auto_id}}`).change(function () {
-            chkPwd("{{form.password.auto_id}}", "{{form.confirm_password.auto_id}}");
-        });
-
-        $('#register-form').submit(function (event) {
-            event.preventDefault();
-            if (isValidate()) {
-                $.ajax({
-                    type: "POST",
-                    async: false,
-                    url: "{% url 'registration' %}",
-                    headers: { 'X-CSRFToken': getCookie('csrftoken') },
-                    data: $("#register-form").serialize(),
-                    success: function (response) {
-                        if (response.success) {
-                            alert("註冊成功");
-                            window.location.href = '{% url "login" %}';
-                        } else {
-                            alert(response.errors);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("發生錯誤:" + error);
-                    }
-                });
-            }
-        });
-    });
-    function isAccExist() {
-        let flag = false
-        $.ajax({
-            type: "POST",
-            async: false,
-            url: "{% url 'chkAcc' %}",
-            headers: { 'X-CSRFToken': getCookie('csrftoken') },
-            data: $("#register-form").serialize(),
-            success: function (response) {
-                if (!response.success) {
-                    alert(response.errors);
-                    flag = true
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("系統發生錯誤:" + error);
-                flag = true
-            }
-        });
-        return flag
-    }
-    function chkPwd(id1, id2) {
-        if ($(`#${id1}`).val() && $(`#${id2}`).val()) {
-            if ($(`#${id1}`).val() !== $(`#${id2}`).val()) {
-                $("#pwd2-errMsg").text("密碼 與 確認密碼 不一致");
-                return false;
-            } else {
-                $("#pwd2-errMsg").text("");
-            }
-        } else {
-            $("#pwd2-errMsg").text("");
-        }
-        return true;
-    }
-    function isValidate() {
-        let flag = true;
-        if ($(`#{{form.account.auto_id}}`).val().length == 0) {
-            $("#acc-errMsg").val("請輸入Email");
-            flag = false;
-        } else if (isAccExist()) {
-            flag = false;
-        }
-        if (!chkPwd("{{form.password.auto_id}}", "{{form.confirm_password.auto_id}}")) {
-            flag = false;
-        }
-        return flag;
-    }
+    var api_chkAcc = "{% url 'users:chkAcc' %}",
+        api_registration = "{% url 'users:registration' %}",
+        home_url="{% url 'index' %}";
 </script>
+<!-- include your js files -->
+<script src="{% static 'js/registration.js' %}"></script>
 {% endblock %}

@@ -10,9 +10,7 @@ from django.forms import ValidationError
 
 
 def detail(request):
-    if "user" in request.session:
-        current_user = request.session["user"]
-        param = {"current_user": current_user}
+    if request.user.is_authenticated:
         if request.method == "POST":
             try:
                 form = ExpenseForm(request.POST)
@@ -22,10 +20,10 @@ def detail(request):
             except Exception as e:
                 return JsonResponse({"success": False, "errors": str(e)})
         else:
-            param = {"current_user": current_user, "form": ExpenseForm()}
+            param = {"form": ExpenseForm()}
         return render(request, "detail.html", param)
     else:
-        return redirect("login")
+        return redirect("user:login")
 
 
 def data(request):
@@ -34,7 +32,7 @@ def data(request):
         param = {"current_user": current_user}
         return render(request, "data.html", param)
     else:
-        return redirect("login")
+        return redirect("user:login")
 
 
 def index(request):
@@ -43,7 +41,7 @@ def index(request):
         param = {"current_user": current_user}
         return render(request, "detail.html", param)
     else:
-        return redirect("login")
+        return redirect("user:login")
 
 
 def getDetail(request):

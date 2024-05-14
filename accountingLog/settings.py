@@ -59,7 +59,6 @@ ROOT_URLCONF = "accountingLog.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
         "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -157,3 +156,7 @@ CONFIRM_DAYS = 7
 
 # 網站網址
 WEB_URL = os.environ.get("WEB_URL", default="your web url")
+AUTH_USER_MODEL = "users.CustomUser"
+
+# authenticate() 不會檢查is_active
+AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.AllowAllUsersModelBackend"]

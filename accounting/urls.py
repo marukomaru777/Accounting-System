@@ -1,13 +1,14 @@
 from django.urls import path
 from . import views
 
+app_name = "accounting"  # app namespace
+
 urlpatterns = [
-    path("", views.index, name="index"),
     path("detail", views.detail, name="detail"),
-    path("post/getDetail", views.getDetail, name="getDetail"),
-    path("post/getSumDetail", views.getSumDetail, name="getSumDetail"),
-    path("post/data", views.data, name="data"),
-    path("post/getCategory", views.getCategory, name="getCategory"),
-    path("post/delExpense", views.delExpense, name="delExpense"),
-    path("post/getEditExpense", views.getEditExpense, name="getEditExpense"),
+    path("api/getDetail", views.getDetail, name="getDetail"),
+    path("api/getSumDetail", views.getSumDetail, name="getSumDetail"),
+    path("api/data", views.data, name="data"),
+    path("api/getCategory", views.getCategory, name="getCategory"),
+    path("api/delExpense", views.delExpense, name="delExpense"),
+    path("api/getEditExpense", views.getEditExpense, name="getEditExpense"),
 ]

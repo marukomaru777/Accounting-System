@@ -129,7 +129,7 @@
         $.ajax({
             type: "POST",
             async: false,
-            url: "{% url 'getDetail' %}",
+            url: "{% url 'accounting:getDetail' %}",
             headers: { 'X-CSRFToken': getCookie('csrftoken') },
             data: {
                 "current_user": "{{ current_user }}",
@@ -248,7 +248,7 @@
         $.ajax({
             type: "POST",
             async: false,
-            url: "{% url 'getSumDetail' %}",
+            url: "{% url 'accounting:getSumDetail' %}",
             headers: { 'X-CSRFToken': getCookie('csrftoken') },
             data: {
                 "current_user": "{{ current_user }}",
@@ -320,7 +320,7 @@
         $.ajax({
             type: "POST",
             async: false,
-            url: "{% url 'detail' %}",
+            url: "{% url 'accounting:detail' %}",
             headers: { 'X-CSRFToken': getCookie('csrftoken') },
             data: $("#edit-form").serialize(),
             success: function (response) {
@@ -345,7 +345,7 @@
             $.ajax({
                 type: "POST",
                 async: false,
-                url: "{% url 'delExpense' %}",
+                url: "{% url 'accounting:delExpense' %}",
                 headers: { 'X-CSRFToken': getCookie('csrftoken') },
                 data: {
                     "current_user": "{{ current_user }}",
@@ -372,7 +372,7 @@
         $.ajax({
             type: "POST",
             async: false,
-            url: "{% url 'getEditExpense' %}",
+            url: "{% url 'accounting:getEditExpense' %}",
             headers: { 'X-CSRFToken': getCookie('csrftoken') },
             data: {
                 "current_user": "{{ current_user }}",
