@@ -288,7 +288,7 @@
             let item = raw_data[i],
                 li_element = document.createElement('li');
 
-            li_element.innerText = `${item.category__c_name}：${item.e_type == '-' ? '-' : ''}${item.total_spent}`;
+            li_element.innerText = `${item.category__c_name}：${item.e_type&item.total_spent>0 == '-' ? '-' : ''}${item.total_spent}`;
             if (item.e_type == '+'){
                 ul_element_income.appendChild(li_element);
                 income_tot += parseInt(item.total_spent.replace(/,/g, ''));
@@ -298,7 +298,7 @@
             }
         };
         span_element_income.innerHTML = `收入小計：${numberComma(income_tot)}`;
-        span_element_spend.innerHTML = `支出小計：-${numberComma(spend_tot)}`;
+        span_element_spend.innerHTML = `支出小計：${spend_tot>0 == '-' ? '-' : ''}${numberComma(spend_tot)}`;
 
         container.appendChild(span_element_income);
         container.appendChild(ul_element_income);
@@ -387,7 +387,7 @@
                     modal.find('#{{form.date.auto_id}}').datepicker('update', data.e_date);
                     modal.find('#{{form.desc.auto_id}}').val(data.e_desc);
                     filterCategoryDdl(data.e_type);
-                    modal.find('#category-select').value = data.category;
+                    modal.find('#category-select').selectedIndex = data.category;
                 } else {
                     alert(response.errors);
                 }

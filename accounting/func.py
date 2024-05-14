@@ -46,16 +46,7 @@ def Register(model):
                 )
                 # Save the user to the database
                 new_user.save()
-                expense_list = ["飲食", "繳費", "日常", "購物", "娛樂", "其他"]
-                income_list = ["薪水", "獎金", "兼職", "投資", "零用錢", "其他"]
-                for i in income_list:
-                    Category.objects.create(
-                        u_account_id=model["account"], c_type="+", c_name=i
-                    )
-                for i in expense_list:
-                    Category.objects.create(
-                        u_account_id=model["account"], c_type="-", c_name=i
-                    )
+
                 code = make_confirm_string(new_user)
                 SendRegisterMail(new_user.email, code)
         else:
@@ -102,6 +93,22 @@ def ConfirmRegistration(code):
             else:
                 user_confirm.u_account.is_active = True
                 user_confirm.u_account.save()
+
+                expense_list = ["飲食", "繳費", "日常", "購物", "娛樂", "其他"]
+                income_list = ["薪水", "獎金", "兼職", "投資", "零用錢", "其他"]
+                for i in income_list:
+                    Category.objects.create(
+                        u_account_id=user_confirm.u_account.account,
+                        c_type="+",
+                        c_name=i,
+                    )
+                for i in expense_list:
+                    Category.objects.create(
+                        u_account_id=user_confirm.u_account.account,
+                        c_type="-",
+                        c_name=i,
+                    )
+
                 user_confirm.delete()
                 message = "註冊完成，請登入"
     except Exception as e:

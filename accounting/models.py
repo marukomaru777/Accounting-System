@@ -1,39 +1,8 @@
 from django.db import models
 from datetime import datetime
+from users.models import CustomUser
 
 # Create your models here.
-
-
-# Create your models here.
-# 建立用戶模型
-class CustomUser(models.Model):
-    account = models.CharField(max_length=100, primary_key=True, unique=True)
-    password = models.CharField(max_length=100)
-    line_id = models.CharField(max_length=100, null=True)
-    name = models.CharField(max_length=50, null=True)
-    email = models.CharField(max_length=200, null=True)
-    is_active = models.BooleanField(default=False)
-
-    # 定義表的元data：描述其他數據的元素
-    class Meta:
-        db_table = "user"  # table name
-
-
-class UserConfirmString(models.Model):
-    code = models.CharField(max_length=2000)
-    u_account = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        to_field="account",
-    )
-    create_time = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.user.name + ":   " + self.code
-
-    class Meta:
-        db_table = "user_confirm_string"
-        ordering = ["-create_time"]
 
 
 class Category(models.Model):
@@ -49,7 +18,7 @@ class Category(models.Model):
     c_icon = models.CharField(max_length=200)
 
     class Meta:
-        db_table = "category"  # table name
+        db_table = "tb_category"  # table name
 
 
 class Expenses(models.Model):
@@ -73,7 +42,7 @@ class Expenses(models.Model):
 
     # 定義表的元data：描述其他數據的元素
     class Meta:
-        db_table = "expenses"  # table name
+        db_table = "tb_expenses"  # table name
 
 
 class ExpenseResult:

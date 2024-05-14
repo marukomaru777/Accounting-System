@@ -1,36 +1,12 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
-from .forms import LoginForm, RegistrationForm, ExpenseForm
+from .forms import ExpenseForm
 from accounting.func import *
 from django.http import JsonResponse
 from django.forms import ValidationError
 
 
 # Create your views here.
-def data(request):
-    if "user" in request.session:
-        current_user = request.session["user"]
-        param = {"current_user": current_user}
-        return render(request, "data.html", param)
-    else:
-        return redirect("login")
-
-
-def index(request):
-    if "user" in request.session:
-        current_user = request.session["user"]
-        param = {"current_user": current_user}
-        return render(request, "detail.html", param)
-    else:
-        return redirect("login")
-
-
-def logout(request):
-    try:
-        del request.session["user"]
-    except:
-        return redirect("login")
-    return redirect("login")
 
 
 def detail(request):
@@ -52,59 +28,22 @@ def detail(request):
         return redirect("login")
 
 
-def login(request):
-    try:
-        if request.method == "POST":
-            form = LoginForm(request.POST)
-            if form.is_valid():
-                Login(form.cleaned_data)
-                request.session["user"] = form.cleaned_data["account"]
-                return JsonResponse({"success": True})
-        else:
-            form = LoginForm()
-    except Exception as e:
-        return JsonResponse({"success": False, "errors": str(e)})
-    return render(request, "login.html", {"form": form})
+def data(request):
+    if "user" in request.session:
+        current_user = request.session["user"]
+        param = {"current_user": current_user}
+        return render(request, "data.html", param)
+    else:
+        return redirect("login")
 
 
-def registration(request):
-    try:
-        if request.method == "POST":
-            form = RegistrationForm(request.POST)
-
-            if form.is_valid():
-                Register(form.cleaned_data)
-                return JsonResponse({"success": True})
-        else:
-            form = RegistrationForm()
-    except ValidationError as e:
-        return JsonResponse({"success": False, "errors": e.message_dict})
-    except Exception as e:
-        return JsonResponse({"success": False, "errors": str(e)})
-    return render(request, "registration.html", {"form": form})
-
-
-def chkAcc(request):
-    try:
-        if request.method == "POST":
-            if IsAccExists(request.POST.get("account")):
-                return JsonResponse(
-                    {"success": False, "errors": "帳號已經存在 請重新登入!"}
-                )
-            else:
-                return JsonResponse({"success": True})
-    except Exception as e:
-        return JsonResponse({"success": False, "errors": str(e)})
-
-
-def confirmRegistration(request):
-    try:
-        code = request.GET.get("code", None)
-        msg = ConfirmRegistration(code)
-    except Exception as e:
-        return JsonResponse({"success": False, "errors": str(e)})
-    form = LoginForm()
-    return render(request, "confirm.html", {"message": msg, "form": form})
+def index(request):
+    if "user" in request.session:
+        current_user = request.session["user"]
+        param = {"current_user": current_user}
+        return render(request, "detail.html", param)
+    else:
+        return redirect("login")
 
 
 def getDetail(request):
