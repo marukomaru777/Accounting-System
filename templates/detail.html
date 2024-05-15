@@ -73,17 +73,14 @@
                         <div class="col-md-2 col-2 d-flex justify-content-center align-items-center icon">
                             <img src="{% static 'img/icon.png' %}" class="img-fluid">
                         </div>
-                        <div class="col-md-5 col-4 description">
+                        <div class="col-md-4 col-3 description">
                             <div class="col-12 class">{{ expense.category.c_name }}</div>
                             <!-- <div class="col-12 tag">tag</div> -->
                             <div class="col-12 info">{{ expense.desc_value }}</div>
                         </div>
-                        <div class="col-md-3 col-2 row amount">
+                        <div class="col-md-4 col-3 row amount">
                             <p class="col-12 text-right" style="text-align: right;">
-                                {% if expense.e_type == '-' %}
-                                    {{ expense.e_type }}
-                                {% endif %}
-                                {{ expense.e_amount|floatformat:0|intcomma }}
+                                {% if expense.e_type == '-' %}{{ expense.e_type }}{% endif %}{{ expense.e_amount|floatformat:0|intcomma }}
                             </p>
                         </div>
                         <div class="col-md-2 col-4 d-flex justify-content-center align-items-center edit-btn">
