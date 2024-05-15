@@ -7,7 +7,6 @@ $(function () {
                 , modal = $(this);
             if (e_id){
                 modal.find('.modal-title').text(title);
-                debugger
                 if (e_id == "insert"){
                     clearInsertForm();
                     modal.find('#id_e_id').val(e_id);
@@ -119,7 +118,7 @@ function getEditData(e_id, modal) {
                 modal.find('#id_date').datepicker('update', data.e_date);
                 modal.find('#id_desc').val(data.e_desc);
                 filterCategoryDdl(data.e_type);
-                modal.find('#category-select').selectedIndex = data.category;
+                modal.find('#category-select').val(data.category);
             } else {
                 alert(response.errors);
             }
