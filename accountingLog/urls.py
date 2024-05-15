@@ -17,11 +17,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
-from users import views
+from users.views import index
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.index, name="index"),
+    path("", index, name="index"),
     path("bot/", include("bot.urls")),
     path("accounting/", include("accounting.urls")),
     path("users/", include("users.urls")),

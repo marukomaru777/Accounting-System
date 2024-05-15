@@ -1,12 +1,30 @@
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm
 from django.http import JsonResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.views import View
+from django.views.generic import TemplateView
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from datetime import datetime
+from django.http import JsonResponse
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from datetime import datetime, timedelta
+from django.db import transaction
+from django.contrib.auth.decorators import login_required
+from accounting.models import Category
+from users.models import CustomUser, UserConfirmString
+from datetime import datetime, timedelta
+from django.db import transaction
+from django.conf import settings
+import pytz
+from django.db.models import Q
+from django.db.models.functions import Coalesce
+from django.db.models import Value
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 
 def index(request):
@@ -120,9 +138,69 @@ class ConfirmRegistration(View):
         return render(request, "confirm.html", {"message": message})
 
 
+class InfoView(LoginRequiredMixin, TemplateView):
+    login_url = "/"
+    redirect_field_name = "redirect_to"
+    template_name = "user-info.html"  # 重寫模板名字
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)  # 重寫get_context_data方法
+
+        context["user_info"] = self.get_user_info()
+        return context
+
+    def get_user_info(self):
+        data = (
+            CustomUser.objects.filter(
+                username=self.request.user.username,
+            )
+            .annotate(name_value=Coalesce("name", Value("")))
+            .first()
+        )
+        return data
+
+
 # api
+
+
 @login_required
-def logout(request):
+def changePassword(request):
+    try:
+        if request.method == "POST":
+            form = PasswordChangeForm(request.user, request.POST)
+            if form.is_valid():
+                if request.POST["old_password"] == request.POST["new_password1"]:
+                    return JsonResponse(
+                        {
+                            "success": False,
+                            "errors": "新密碼不可與舊密碼一致",
+                        }
+                    )
+                user = form.save()
+                update_session_auth_hash(request, user)
+                return JsonResponse({"success": True})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": "{}".format(e)})
+    return JsonResponse({"success": False, "errors": "舊密碼錯誤"})
+
+
+@login_required
+def saveUser(request):
+    try:
+        if request.method == "POST":
+            user = CustomUser.objects.get(username=request.user.username)
+            with transaction.atomic():
+                user.email = request.POST["email"]
+                user.name = request.POST["name"]
+                user.save()
+                return JsonResponse({"success": True})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+
+
+@login_required
+def logout_view(request):
     logout(request)
     return redirect("index")
 
@@ -131,9 +209,7 @@ def logout(request):
 def chkAcc(request):
     try:
         if request.method == "POST":
-            if CustomUser.objects.filter(
-                username=request.POST.get("username")
-            ).exists():
+            if CustomUser.objects.filter(username=request.POST["username"]).exists():
                 return JsonResponse(
                     {"success": False, "errors": "帳號已經存在 請重新登入!"}
                 )

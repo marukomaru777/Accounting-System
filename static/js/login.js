@@ -27,7 +27,7 @@ $(function () {
 function isValidate() {
     flag = true;
     if ($(`#id_username`).val().length == 0) {
-        $("#acc-errMsg").text("請輸入Email");
+        $("#username-errMsg").text("請輸入Email");
         flag = false;
     }
     if ($(`#id_password`).val().length == 0) {

@@ -1,6 +1,6 @@
 from .forms import ExpenseForm
 from django.http import JsonResponse
-from django.views.generic.list import ListView
+from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from collections import defaultdict
 from django.db.models.functions import Coalesce
@@ -28,10 +28,9 @@ def get_month_range(date_str):
 
 
 # Create your views here.
-class DetailView(LoginRequiredMixin, ListView):
+class DetailView(LoginRequiredMixin, TemplateView):
     login_url = "/"
     redirect_field_name = "redirect_to"
-    model = Expenses
     template_name = "detail.html"
     context_object_name = "expense_list"
     paginate_by = 20
@@ -39,26 +38,10 @@ class DetailView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-        expenses = self.get_queryset()
 
-        grouped_expenses = defaultdict(list)
-        for expense in expenses:
-            grouped_expenses[expense.e_date].append(expense)
+        context["grouped_expenses"] = self.get_grouped_data()
 
-        for date, expenses_in_date in grouped_expenses.items():
-            total_amount = sum(
-                expense.e_amount if expense.e_type == "+" else -expense.e_amount
-                for expense in expenses_in_date
-            )
-            grouped_expenses[date] = {
-                "expenses": expenses_in_date,
-                "total_amount": total_amount,
-            }
-        sorted_grouped_expenses = dict(sorted(grouped_expenses.items(), reverse=True))
-
-        context["grouped_expenses"] = sorted_grouped_expenses
-
-        summary = self.get_summary()
+        summary = self.get_summary_data()
 
         # Format the total spent for each category within each expense type
         total = 0
@@ -79,8 +62,8 @@ class DetailView(LoginRequiredMixin, ListView):
         context["next_date"] = self.get_next_month()
         return context
 
-    def get_queryset(self):
-        queryset = (
+    def get_grouped_data(self):
+        raw_data = (
             Expenses.objects.select_related("category")
             .filter(
                 username=self.request.user.username,
@@ -91,9 +74,23 @@ class DetailView(LoginRequiredMixin, ListView):
             )  # Coalesce to handle NULL values
             .order_by("-e_date")  # 按日期排序
         )
-        return queryset
+        grouped_expenses = defaultdict(list)
+        for expense in raw_data:
+            grouped_expenses[expense.e_date].append(expense)
 
-    def get_summary(self):
+        for date, expenses_in_date in grouped_expenses.items():
+            total_amount = sum(
+                expense.e_amount if expense.e_type == "+" else -expense.e_amount
+                for expense in expenses_in_date
+            )
+            grouped_expenses[date] = {
+                "expenses": expenses_in_date,
+                "total_amount": total_amount,
+            }
+        sorted_grouped_expenses = dict(sorted(grouped_expenses.items(), reverse=True))
+        return sorted_grouped_expenses
+
+    def get_summary_data(self):
         # Aggregate expenses for each category and expense type
         category_summary = (
             Expenses.objects.filter(
@@ -209,7 +206,7 @@ def getEditExpense(request):
             detail = (
                 Expenses.objects.values(
                     "category", "e_date", "e_desc", "e_type", "e_amount", "e_id"
-                ).filter(username=request.user.username, e_id=request.POST.get("e_id"))
+                ).filter(username=request.user.username, e_id=request.POST["e_id"])
             ).first()
             return JsonResponse({"success": True, "result": detail})
     except Exception as e:
@@ -236,7 +233,7 @@ def delExpense(request):
         if request.method == "POST":
             with transaction.atomic():
                 expense = Expenses.objects.get(
-                    e_id=request.POST.get("e_id"), username=request.user.username
+                    e_id=request.POST["e_id"], username=request.user.username
                 )
                 expense.delete()
             return JsonResponse({"success": True, "result": "刪除成功"})

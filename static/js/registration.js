@@ -76,7 +76,7 @@ function chkPwd(pwd1, pwd2) {
 function isValidate() {
     let flag = true;
     if ($("#id_username").val().length == 0) {
-        $("#acc-errMsg").text("請輸入Email");
+        $("#username-errMsg").text("請輸入Email");
         flag = false;
     } else if (isAccExist()) {
         flag = false;

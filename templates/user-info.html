@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block title %}User／修改個人資料{% endblock %}
+{% block link_file %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/user-info.css' %}">
+{% endblock %}
+{% block body %}
+<div class="row justify-content-center align-items-center">
+    <div class=" col-12 col-md-10 row">
+        <div class="col-md-3 col-12" style="background-color: blue;">
+        </div>
+        <div class="col-md-9 col-12 row">
+            <div class="col-md-6 col-12">
+                <h2 class="page-title">個人基本資料</h2>
+                <form method="post" id="user-form">
+                    <table style="margin-top: 40px; width: 100%;" class="input-table">
+                        <tr style="height:60px">
+                            <td width="30%">會員帳號</td>
+                            <td width="70%">
+                                <input type="email" name="username" class="form-control" required="" id="id_username" value="{{ user_info.username }}" disabled="disabled">
+                            </td>
+                        </tr>
+                        <tr style="height:60px">
+                            <td width="30%">EMAIL</td>
+                            <td width="70%">
+                                <input type="email" name="email" class="form-control" required="" id="id_email" placeholder="請輸入EMAIL" value="{{ user_info.email }}">
+                                <span class="errMsg" id="email-errMsg"></span>
+                            </td>
+                        </tr>
+                        <tr style="height:60px">
+                            <td width="30%">名字</td>
+                            <td width="70%">
+                                <input type="text" name="name" class="form-control" id="id_name" placeholder="請輸入名字" value="{{ user_info.name_value }}"s>
+                                <span class="errMsg" id="name-errMsg"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="text-center">
+                                <button type="submit" class="btn btn-secondary" style="width: 100%; height: 50px;">
+                                    確認修改個人資料
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="col-md-6 col-12">
+                <h2 class="page-title">修改密碼</h2>
+                <form method="post" id="pwd-form">
+                    <table style="margin-top: 40px; width: 100%;" class="input-table">
+                        <tr style="height:60px">
+                            <td width="30%">舊密碼</td>
+                            <td width="70%">
+                                <input type="password" name="old_password" class="form-control" required="" id="id_old_password" placeholder="請輸入舊密碼">
+                                <span class="errMsg" id="old_password-errMsg"></span>
+                            </td>
+                        </tr>
+                        <tr style="height:60px">
+                            <td width="30%">輸入新密碼</td>
+                            <td width="70%">
+                                <input type="password" name="new_password1" class="form-control" required="" id="id_new_password1" placeholder="請輸入新密碼">
+                                <span class="errMsg" id="new_password1-errMsg"></span>
+                            </td>
+                        </tr>
+                        <tr style="height:60px">
+                            <td width="30%">確認新密碼</td>
+                            <td width="70%">
+                                <input type="password" name="new_password2" class="form-control" required="" id="id_new_password2" placeholder="請再次輸入新密碼">
+                                <span class="errMsg" id="new_password2-errMsg"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="text-center">
+                                <button type="submit" class="btn btn-secondary" style="width: 100%; height: 50px;">
+                                    確認修改密碼
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+{% endblock %}
+{% block js_script %}
+<!-- define required variables in template -->
+<script>
+    var api_save_user = "{% url 'users:saveUser' %}",
+        api_change_pwd = "{% url 'users:changePwd' %}";
+</script>
+<!-- include your js files -->
+<script src="{% static 'js/user-info.js' %}"></script>
+{% endblock %}
