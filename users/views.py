@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from django.views import View
 from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -118,12 +119,10 @@ class ConfirmRegistration(View):
 
 
 # api
+@login_required
 def logout(request):
-    try:
-        logout(request)
-    except:
-        return redirect("login")
-    return redirect("login")
+    logout(request)
+    return redirect("index")
 
 
 # 檢查帳號是否存在

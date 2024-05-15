@@ -1,8 +1,8 @@
 <table id="input-table">
     <form id="edit-form">
-        <div style="display: none;">
+        <!-- <div style="display: none;">
             {{ form.current_user }}
-        </div>
+        </div> -->
         <tr style="height:60px">
             <td width="30%">類別</td>
             <td width="70%">
@@ -24,31 +24,32 @@
         <tr style="height:60px">
             <td width="30%">金額</td>
             <td width="70%">
-                {{form.amount}}
-                <!-- <input type="number" min="0" class="form-control" id="amount-input" name="e_amount"> -->
+                <!-- {{form.amount}} -->
+                <input type="number" min="0" class="form-control" id="id_amount" name="e_amount">
                 <span class="errMsg" id="amount-errMsg"></span>
             </td>
         </tr>
         <tr style="height:60px">
             <td width="30%">日期</td>
             <td width="70%">
-                {{form.date}}
-                <!-- <input type="text" class="form-control" id="{{form.date.auto_id}}" name="e_date"> -->
+                <!-- {{form.date}} -->
+                <input type="text" class="form-control" id="id_date" name="e_date">
                 <span class="errMsg" id="date-errMsg"></span>
             </td>
         </tr>
         <tr style="height:60px">
             <td width="30%">備註</td>
             <td width="70%">
-                {{form.desc}}
-                <!-- <textarea class="form-control" id="desc-input" name="e_desc" rows="3"></textarea> -->
+                <!-- {{form.desc}} -->
+                <textarea class="form-control" id="id_desc" name="e_desc" rows="3"></textarea>
                 <span class="errMsg" id="desc-errMsg"></span>
             </td>
         </tr>
         <tr style="display: none;">
             <td width="30%">ID</td>
             <td width="70%">
-                {{form.e_id}}
+                <!-- {{form.e_id}} -->
+                <input class="form-control" id="id_e_id" name="e_id"></input>
                 <span class="errMsg" id="desc-errMsg"></span>
             </td>
         </tr>

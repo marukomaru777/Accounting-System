@@ -160,3 +160,6 @@ AUTH_USER_MODEL = "users.CustomUser"
 
 # authenticate() 不會檢查is_active
 AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.AllowAllUsersModelBackend"]
+
+# 使用 @login_required 若使用者無登入，則會跳到登入頁面
+LOGIN_URL = "users/login/"
