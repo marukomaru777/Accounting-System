@@ -1,17 +1,19 @@
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from .forms import RegistrationForm
-from accounting.func import *
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from django.views import View
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from datetime import datetime
 
 
 def index(request):
     if request.user.is_authenticated:
-        return redirect("accounting:detail")
+        current_date = datetime.now().strftime("%Y-%m")
+        redirect_url = reverse("accounting:detail", kwargs={"date": current_date})
+        return redirect(redirect_url)
     else:
         return redirect("users:login")
 
@@ -129,7 +131,9 @@ def logout(request):
 def chkAcc(request):
     try:
         if request.method == "POST":
-            if IsAccExists(request.POST.get("username")):
+            if CustomUser.objects.filter(
+                username=request.POST.get("username")
+            ).exists():
                 return JsonResponse(
                     {"success": False, "errors": "帳號已經存在 請重新登入!"}
                 )

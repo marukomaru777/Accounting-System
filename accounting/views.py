@@ -1,16 +1,20 @@
-from typing import Any
-from django.db.models.query import QuerySet
-from django.shortcuts import render
-from django.shortcuts import redirect
 from .forms import ExpenseForm
-from accounting.func import *
 from django.http import JsonResponse
-from django.forms import ValidationError
-from django.views import View
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-import pandas as pd
 from collections import defaultdict
+from django.db.models.functions import Coalesce
+from django.db.models import Value
+from datetime import datetime, timedelta
+from django.utils import timezone
+from django.db import transaction
+from django.contrib.auth.decorators import login_required
+from accounting.models import Expenses, Category
+from users.models import CustomUser
+from datetime import datetime, timedelta
+from django.db.models import Sum
+from django.db import transaction
+import calendar
 
 
 def get_month_range(date_str):
@@ -25,17 +29,15 @@ def get_month_range(date_str):
 
 # Create your views here.
 class DetailView(LoginRequiredMixin, ListView):
+    login_url = "/"
+    redirect_field_name = "redirect_to"
     model = Expenses
     template_name = "detail.html"
     context_object_name = "expense_list"
     paginate_by = 20
-    extra_context = {
-        "pagination_url": "accounting:DetailView",
-        "namne": "a",
-        "is_paginated": True,
-    }
 
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
         expenses = self.get_queryset()
 
@@ -43,10 +45,38 @@ class DetailView(LoginRequiredMixin, ListView):
         for expense in expenses:
             grouped_expenses[expense.e_date].append(expense)
 
+        for date, expenses_in_date in grouped_expenses.items():
+            total_amount = sum(
+                expense.e_amount if expense.e_type == "+" else -expense.e_amount
+                for expense in expenses_in_date
+            )
+            grouped_expenses[date] = {
+                "expenses": expenses_in_date,
+                "total_amount": total_amount,
+            }
         sorted_grouped_expenses = dict(sorted(grouped_expenses.items(), reverse=True))
 
         context["grouped_expenses"] = sorted_grouped_expenses
-        context["summary_data"] = self.get_summary()
+
+        summary = self.get_summary()
+
+        # Format the total spent for each category within each expense type
+        total = 0
+        for e_type, data in summary.items():
+            if e_type == "+":
+                total += int(data["total_spent"])
+            elif e_type == "-":
+                total -= int(data["total_spent"])
+
+            data["total_spent"] = format(int(data["total_spent"]), ",")
+            for category_name, total_spent in data["categories"].items():
+                data["categories"][category_name] = format(int(total_spent), ",")
+
+        context["summary_data"] = summary
+        context["total"] = format(total, ",")
+
+        context["pre_date"] = self.get_previous_month()
+        context["next_date"] = self.get_next_month()
         return context
 
     def get_queryset(self):
@@ -54,8 +84,11 @@ class DetailView(LoginRequiredMixin, ListView):
             Expenses.objects.select_related("category")
             .filter(
                 username=self.request.user.username,
-                e_date__range=get_month_range(datetime.now().strftime("%Y-%m")),
+                e_date__range=get_month_range(self.kwargs["date"]),
             )
+            .annotate(
+                desc_value=Coalesce("e_desc", Value(""))
+            )  # Coalesce to handle NULL values
             .order_by("-e_date")  # 按日期排序
         )
         return queryset
@@ -65,7 +98,7 @@ class DetailView(LoginRequiredMixin, ListView):
         category_summary = (
             Expenses.objects.filter(
                 username=self.request.user.username,
-                e_date__range=get_month_range(datetime.now().strftime("%Y-%m")),
+                e_date__range=get_month_range(self.kwargs["date"]),
             )
             .values("category__c_name", "e_type")
             .annotate(category_total=Sum("e_amount"))
@@ -88,92 +121,124 @@ class DetailView(LoginRequiredMixin, ListView):
 
             summary_data[e_type]["categories"][category_name] += category_total
 
-        # Format the total spent for each category within each expense type
-        for e_type, data in summary_data.items():
-            data["total_spent"] = format(int(data["total_spent"]), ",")
-            for category_name, total_spent in data["categories"].items():
-                data["categories"][category_name] = format(int(total_spent), ",")
-
         return summary_data
 
-    def post(self, request):
-        try:
-            form = ExpenseForm(request.POST)
-            if form.is_valid():
-                SaveExpense(form.cleaned_data)
-                return JsonResponse({"success": True})
-        except Exception as e:
-            return JsonResponse({"success": False, "errors": str(e)})
+    def get_previous_month(self):
+        # Convert the current_month string to a datetime object
+        current_month_date = timezone.datetime.strptime(self.kwargs["date"], "%Y-%m")
 
+        # Calculate the first day of the current month
+        first_day_of_current_month = current_month_date.replace(day=1)
 
-def data(request):
-    if "user" in request.session:
-        current_user = request.session["user"]
-        param = {"current_user": current_user}
-        return render(request, "data.html", param)
-    else:
-        return redirect("user:login")
+        # Calculate the last day of the previous month
+        last_day_of_previous_month = first_day_of_current_month - timedelta(days=1)
 
+        # Extract the year and month of the previous month
+        previous_year = last_day_of_previous_month.year
+        previous_month = last_day_of_previous_month.month
 
-def index(request):
-    if "user" in request.session:
-        current_user = request.session["user"]
-        param = {"current_user": current_user}
-        return render(request, "detail.html", param)
-    else:
-        return redirect("user:login")
+        # Format the previous year and month as a string
+        formatted_previous_month = f"{previous_year}-{previous_month:02d}"
 
+        return formatted_previous_month
 
-def getDetail(request):
-    try:
-        if request.method == "POST":
-            detail = GetExpenses(
-                request.POST.get("current_user"), request.POST.get("selected_date")
+    def get_next_month(self):
+        # Convert the current_month string to a datetime object
+        current_month_date = timezone.datetime.strptime(self.kwargs["date"], "%Y-%m")
+
+        # Calculate the first day of the current month
+        first_day_of_current_month = current_month_date.replace(day=1)
+
+        # Calculate the first day of the next month
+        if current_month_date.month == 12:  # If current month is December
+            first_day_of_next_month = first_day_of_current_month.replace(
+                year=current_month_date.year + 1, month=1
             )
-            return JsonResponse({"success": True, "result": detail})
+        else:
+            first_day_of_next_month = first_day_of_current_month.replace(
+                month=current_month_date.month + 1
+            )
+
+        # Extract the year and month of the next month
+        next_year = first_day_of_next_month.year
+        next_month = first_day_of_next_month.month
+
+        # Format the next year and month as a string
+        formatted_next_month = f"{next_year}-{next_month:02d}"
+
+        return formatted_next_month
+
+
+@login_required
+def saveExpense(request):
+    try:
+        form = ExpenseForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                if form.cleaned_data["e_id"] == "insert":
+                    expense = Expenses(
+                        username=CustomUser.objects.get(username=request.user.username),
+                        category=Category.objects.get(
+                            c_id=form.cleaned_data["category"]
+                        ),
+                        e_date=form.cleaned_data["date"],
+                        e_type=form.cleaned_data["type"],
+                        e_amount=form.cleaned_data["amount"],
+                        e_desc=form.cleaned_data["desc"],
+                    )
+                else:
+                    expense = Expenses.objects.get(e_id=form.cleaned_data["e_id"])
+                    expense.category = Category.objects.get(
+                        c_id=form.cleaned_data["category"]
+                    )
+                    expense.e_date = form.cleaned_data["date"]
+                    expense.e_type = form.cleaned_data["type"]
+                    expense.e_amount = form.cleaned_data["amount"]
+                    expense.e_desc = form.cleaned_data["desc"]
+                # Save the user to the database
+                expense.save()
+                return JsonResponse({"success": True})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
-    return JsonResponse({"success": False})
 
 
+@login_required
 def getEditExpense(request):
     try:
         if request.method == "POST":
-            detail = GetEditExpense(
-                request.POST.get("current_user"), request.POST.get("e_id")
-            )
+            detail = (
+                Expenses.objects.values(
+                    "category", "e_date", "e_desc", "e_type", "e_amount", "e_id"
+                ).filter(username=request.user.username, e_id=request.POST.get("e_id"))
+            ).first()
             return JsonResponse({"success": True, "result": detail})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
     return JsonResponse({"success": False})
 
 
-def getSumDetail(request):
-    try:
-        if request.method == "POST":
-            sum_detail = GetSumExpenses(
-                request.POST.get("current_user"), request.POST.get("selected_date")
-            )
-            return JsonResponse({"success": True, "result": sum_detail})
-    except Exception as e:
-        return JsonResponse({"success": False, "errors": str(e)})
-    return JsonResponse({"success": False})
-
-
+@login_required
 def getCategory(request):
     try:
         if request.method == "POST":
-            category = GetCategory(request.POST.get("current_user"))
-            return JsonResponse({"success": True, "result": category})
+            category = Category.objects.values("c_id", "c_type", "c_name").filter(
+                username=request.user.username
+            )
+            return JsonResponse({"success": True, "result": list(category)})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
     return JsonResponse({"success": False})
 
 
+@login_required
 def delExpense(request):
     try:
         if request.method == "POST":
-            DeleteExpense(request.POST.get("e_id"), request.POST.get("current_user"))
+            with transaction.atomic():
+                expense = Expenses.objects.get(
+                    e_id=request.POST.get("e_id"), username=request.user.username
+                )
+                expense.delete()
             return JsonResponse({"success": True, "result": "刪除成功"})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})

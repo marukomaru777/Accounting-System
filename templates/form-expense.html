@@ -25,7 +25,7 @@
             <td width="30%">金額</td>
             <td width="70%">
                 <!-- {{form.amount}} -->
-                <input type="number" min="0" class="form-control" id="id_amount" name="e_amount">
+                <input type="number" min="0" class="form-control" id="id_amount" name="amount">
                 <span class="errMsg" id="amount-errMsg"></span>
             </td>
         </tr>
@@ -33,7 +33,7 @@
             <td width="30%">日期</td>
             <td width="70%">
                 <!-- {{form.date}} -->
-                <input type="text" class="form-control" id="id_date" name="e_date">
+                <input type="text" class="form-control" id="id_date" name="date">
                 <span class="errMsg" id="date-errMsg"></span>
             </td>
         </tr>
@@ -41,7 +41,7 @@
             <td width="30%">備註</td>
             <td width="70%">
                 <!-- {{form.desc}} -->
-                <textarea class="form-control" id="id_desc" name="e_desc" rows="3"></textarea>
+                <textarea class="form-control" id="id_desc" name="desc" rows="3"></textarea>
                 <span class="errMsg" id="desc-errMsg"></span>
             </td>
         </tr>
@@ -58,11 +58,10 @@
 <script>
     const category_raw_data = getCategory();
     $(function () {
-        $('#{{ form.current_user.auto_id }}').val('{{current_user}}');
         let default_type = '-';
         $('input[type=radio][name=type]').filter('[value="' + default_type + '"]').prop('checked', true);
         filterCategoryDdl(default_type);
-        $('#{{form.date.auto_id}}').datepicker({
+        $('#id_date').datepicker({
             format: "yyyy-mm-dd",
             autoclose: true,//選擇日期後就會自動關閉
             todayHighlight: true,//今天會有一個底色
@@ -70,11 +69,12 @@
             minViewMode: "days", // 選擇月份模式
             startView: "days", // 初始顯示月份模式
             language: 'zh-TW'//中文化
-        })
-        $('#{{form.date.auto_id}}').datepicker('update', (new Date()));
+        });
+        $('#id_date').datepicker('update', (new Date()));
         $('input[type=radio][name=type]').change(function () {
             filterCategoryDdl(this.value);
         });
+            
     });
 
     // 取得使用者的分類清單
@@ -86,7 +86,7 @@
             url: "{% url 'accounting:getCategory' %}",
             headers: { 'X-CSRFToken': getCookie('csrftoken') },
             data: {
-                "current_user": "{{ current_user }}",
+                // "current_user": "{{ current_user }}",
             },
             success: function (response) {
                 if (response.success) {

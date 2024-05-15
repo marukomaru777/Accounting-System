@@ -4,7 +4,6 @@ from django.forms import ValidationError
 
 class ExpenseForm(forms.Form):
     e_id = forms.CharField(required=True)
-    current_user = forms.CharField(widget=forms.HiddenInput)
     type = forms.CharField(required=True, label="收支")
     category = forms.CharField(required=True, label="分類")
     date = forms.DateField(required=True, label="日期")

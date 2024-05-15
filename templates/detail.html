@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 {% block title %}Detail／明細{% endblock %}
 {% block link_file %}
@@ -45,7 +46,7 @@
         <!-- summary -->
         <div class="col-12 side" id="summary">
             <div class="col-12 tip">
-                總花費：??
+                合計：{{ total }}
             </div>
         </div>
     </div>
@@ -60,13 +61,13 @@
             </button>
         </div>
         <div id="daily-detail">
-            {% for date, expenses in grouped_expenses.items %}
+            {% for date, data in grouped_expenses.items %}
             <div class="col-12 row daily-list">
                 <div class="col-12 row sum">
                     <div class="col-4">{{ date|date:'Y-m-d' }}</div>
-                    <div class="col-8" style="text-align: right;">Total: ？？？</div>
+                    <div class="col-8" style="text-align: right;">Total: {{ data.total_amount|floatformat:0|intcomma }}</div>
                 </div>
-                {% for expense in expenses %}
+                {% for expense in data.expenses %}
                 <div class="col-12 row detail-list">
                     <div class="col-12 row detail">
                         <div class="col-md-2 col-2 d-flex justify-content-center align-items-center icon">
@@ -75,17 +76,20 @@
                         <div class="col-md-5 col-4 description">
                             <div class="col-12 class">{{ expense.category.c_name }}</div>
                             <!-- <div class="col-12 tag">tag</div> -->
-                            <div class="col-12 info">{{ expense.e_desc }}</div>
+                            <div class="col-12 info">{{ expense.desc_value }}</div>
                         </div>
                         <div class="col-md-3 col-2 row amount">
                             <p class="col-12 text-right" style="text-align: right;">
-                                {{ expense.e_type }}{{ expense.e_amount|floatformat:0 }}
+                                {% if expense.e_type == '-' %}
+                                    {{ expense.e_type }}
+                                {% endif %}
+                                {{ expense.e_amount|floatformat:0|intcomma }}
                             </p>
                         </div>
                         <div class="col-md-2 col-4 d-flex justify-content-center align-items-center edit-btn">
                             <div class="text-center">
                                 <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#editModal" data-title="編輯" data-id="${item.e_id}">
+                                <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#editModal" data-title="編輯" data-id="{{ expense.e_id }}">
                                     編輯
                                 </button>
                                 <button class="btn btn-outline-dark" onclick="deleteData('{{ expense.e_id }}')">
@@ -127,11 +131,16 @@
 {% block js_script %}
 <!-- define required variables in template -->
 <script>
-    var api_getDetail = "{% url 'accounting:getDetail' %}",
-        api_getSumDetail="{% url 'accounting:getSumDetail' %}",
-        post_detail = "{% url 'accounting:detail' %}",
-        api_del = "{% url 'accounting:delExpense' %}",
-        api_getEditExpense = "{% url 'accounting:getEditExpense' %}";
+    var api_del = "{% url 'accounting:delExpense' %}",
+        api_getEditExpense = "{% url 'accounting:getEditExpense' %}",
+        api_saveExpense = "{% url 'accounting:saveExpense' %}";
+
+    var currentUrl = window.location.pathname,
+        parts = currentUrl.split('/'),
+        dateParam = parts[parts.length - 2];
+
+    var url_pre_detail=`{% url 'accounting:detail' date=pre_date %}`,
+        url_next_detail=`{% url 'accounting:detail' date=next_date %}`;
 </script>
 <!-- include your js files -->
 <script src="{% static 'js/detail.js' %}"></script>
