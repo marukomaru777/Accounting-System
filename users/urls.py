@@ -13,5 +13,6 @@ urlpatterns = [
     path("info/", InfoView.as_view(), name="info"),
     path("api/chkAcc/", views.chkAcc, name="chkAcc"),
     path("api/saveUser/", views.saveUser, name="saveUser"),
+    path("api/delUser/", views.delUser, name="delUser"),
     path("api/changePwd/", views.changePassword, name="changePwd"),
 ]

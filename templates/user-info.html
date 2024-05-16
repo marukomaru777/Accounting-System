@@ -14,7 +14,7 @@
             <div class="col-md-6 col-12">
                 <h2 class="page-title">個人基本資料</h2>
                 <form method="post" id="user-form">
-                    <table style="margin-top: 40px; width: 100%;" class="input-table">
+                    <table style="margin: 40px 0px; width: 100%;" class="input-table">
                         <tr style="height:60px">
                             <td width="30%">會員帳號</td>
                             <td width="70%">
@@ -44,6 +44,9 @@
                         </tr>
                     </table>
                 </form>
+                <button id="btn-delAcc" class="btn btn-dark" style="width: 100%; height: 50px;">
+                    帳號註銷
+                </button>
             </div>
             <div class="col-md-6 col-12">
                 <h2 class="page-title">修改密碼</h2>
@@ -91,7 +94,8 @@
 <!-- define required variables in template -->
 <script>
     var api_save_user = "{% url 'users:saveUser' %}",
-        api_change_pwd = "{% url 'users:changePwd' %}";
+        api_change_pwd = "{% url 'users:changePwd' %}",
+        api_del_user = "{% url 'users:delUser' %}";
 </script>
 <!-- include your js files -->
 <script src="{% static 'js/user-info.js' %}"></script>
