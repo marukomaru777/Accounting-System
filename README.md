@@ -48,7 +48,7 @@ Add/Edit Data Form
 Demo Environment: macOS
 ### STEP1 clone & cd this folder
 ```shell
-git clone https://github.com/marukomaru777/AccountingLog # clone project
+git clone https://github.com/marukomaru777/AccountingLog.git # clone project
 cd AccountingLog # navigate to project folder
 ```
 
