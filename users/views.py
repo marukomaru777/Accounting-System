@@ -7,17 +7,11 @@ from django.views.generic import TemplateView
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from datetime import datetime
-from django.http import JsonResponse
-from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime, timedelta
 from django.db import transaction
-from django.contrib.auth.decorators import login_required
 from accounting.models import Category
 from users.models import CustomUser, UserConfirmString
-from datetime import datetime, timedelta
-from django.db import transaction
 from django.conf import settings
 import pytz
 from django.db.models import Q
@@ -40,6 +34,7 @@ class LoginView(View):
     def get(self, request):
         return render(request, "login.html")
 
+    # 檢查密碼
     def post(self, request):
         try:
             username = request.POST["username"]
@@ -60,6 +55,7 @@ class RegistrationView(View):
     def get(self, request):
         return render(request, "registration.html")
 
+    # 註冊並發送確認信
     def post(self, request):
         try:
             form = RegistrationForm(data=request.POST)
@@ -98,6 +94,7 @@ class RegistrationView(View):
             return JsonResponse({"success": False, "errors": "{}".format(e)})
 
 
+# 驗證頁面
 class ConfirmRegistration(View):
     def get(self, request):
         try:
@@ -149,6 +146,7 @@ class InfoView(LoginRequiredMixin, TemplateView):
         context["user_info"] = self.get_user_info()
         return context
 
+    # 取得使用者資料
     def get_user_info(self):
         data = (
             CustomUser.objects.filter(
@@ -163,6 +161,7 @@ class InfoView(LoginRequiredMixin, TemplateView):
 # api
 
 
+# 變更使用者密碼
 @login_required
 def changePassword(request):
     try:
@@ -184,6 +183,7 @@ def changePassword(request):
     return JsonResponse({"success": False, "errors": "舊密碼錯誤"})
 
 
+# 變更使用者資料
 @login_required
 def saveUser(request):
     try:
@@ -199,6 +199,7 @@ def saveUser(request):
         return JsonResponse({"success": False, "errors": str(e)})
 
 
+# 登出
 @login_required
 def logout_view(request):
     logout(request)
