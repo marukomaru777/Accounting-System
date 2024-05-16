@@ -1,41 +1,111 @@
-## 一、new Django project
-### STEP1 create virtual environment & install package
+# 記帳平台
+## 一、系統功能
+### (一) 註冊頁面
+- 使用者註冊帳號
+- 註冊時，系統寄送驗證帳號連結 email 給使用者
+- 點選 email 連結確認註冊
+
+使用者註冊
+![image](./readme_assets/registration.png)
+
+註冊驗證信
+![image](./readme_assets/reg_confirm_mail.png)
+
+點選註冊驗證信連結，成功註冊
+![image](./readme_assets/reg_success.png)
+
+點選註冊驗證信連結，註冊失敗
+![image](./readme_assets/reg_fail.png)
+
+### (二) 登入頁面
+- 使用者登入帳號
+
+登入
+![image](./readme_assets/login.png)
+
+### (三) 明細頁面
+- 登入後才能瀏覽此頁面
+- 以月份為單位查詢資料
+- 新增/編輯/刪除收支資料
+
+搜尋條件預設為今日的月份
+![image](./readme_assets/detail.png)
+
+新增/編輯資料
+![image](./readme_assets/detail-insert.png)
+![image](./readme_assets/detail-update.png)
+
+### (四) 使用者資料設定
+- 更改個人資料
+- 重設密碼
+![image](./readme_assets/user-info.png)
+
+## 使用此專案
+示範環境：macOS
+### STEP1 clone & cd this folder
+```shell
+git clone https://github.com/marukomaru777/AccountingLog # clone專案
+cd AccountingLog # 切至專案資料夾
+```
+
+### STEP2 create virtual environment & install package
 ```shell
 python3 -m venv env
 source env/bin/activate
 pip3 install -r requirements.txt
 ```
 
-### STEP2 create Django project
+### STEP3 migrate database
+使用sqlite
 ```shell
-django-admin startproject accountingLog
-python manage.py startapp bot
+python3 manage.py makemigrations
+python3 manage.py migrate
 ```
 
-### STEP3 line-bot-sdk
-至[line developers](https://developers.line.me/console/)取得channel secret、channel access token，放到settings
+### STEP4 設定 `accountingLog/setting.py`
+1.`SECRET_KEY`
+手動生成
 ```python
-# settings.py
-LINE_CHANNEL_ACCESS_TOKEN = "channel access token"
-LINE_CHANNEL_SECRET = "channel secret"
+from django.core.management.utils import get_random_secret_key
+print(get_random_secret_key())
 ```
+
 ```python
-# views.py
-from linebot import LineBotApi, WebhookParser
-from django.conf import settings
-
-line_bot_api = LineBotApi(settings.CHANNEL_ACCESS_TOKEN)
-parser = WebhookParser(settings.CHANNEL_SECRET)
+SECRET_KEY = "your_generated_secret_key_here"
 ```
 
-### STEP4 本機環境使用ngrok讓外網連接
-[ngrok下載後安裝](https://ngrok.com/download)
-```shell
-ngrok authtoken <token>
-ngrok http <port>
+2.`ALLOWED_HOSTS`
+設置為本機
+```python
+ALLOWED_HOSTS = ["127.0.0.1"]
 ```
 
-修改vs code launch.json
+3.`LINE_CHANNEL_ACCESS_TOKEN`, `LINE_CHANNEL_SECRET`
+至[line developers](https://developers.line.me/console/)取得 channel secret、channel access token
+
+4.`CSRF_TRUSTED_ORIGINS"`
+設置為本機
+```python
+CSRF_TRUSTED_ORIGINS = ["https://*.127.0.0.1"]
+```
+
+5.`EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`
+至[gmail app password](https://dev.to/krishnaa192/creating-google-app-password-for-django-project-4oj3)取得 app password
+```python
+EMAIL_HOST_USER = "your_gmail_account"
+EMAIL_HOST_PASSWORD = "your_app_password"
+```
+
+6.`WEB_URL`
+設置為本機，若欲變更網域，則需要更新此變數
+```python
+WEB_URL = "https://*.127.0.0.1"
+```
+
+設定完成後即可在本機啟動。
+
+### STEP5 修改vs code launch.json
+指定port:3000
 ```json
 // launch.json
 "args": [
@@ -43,39 +113,38 @@ ngrok http <port>
     "3000", //指定port，若無默認8000
 ]
 ```
-```python
-# settings.py
-DEBUG = True # debug模式，程式上線後改False
-ALLOWED_HOSTS = ["your host"]
+
+### STEP6 使用ngrok讓外網連接
+1.安裝並啟動 ngrok
+[ngrok下載後安裝](https://ngrok.com/download)
+```shell
+ngrok authtoken <token>
 ```
 
-### STEP5 部屬到render
-[render](https://dashboard.render.com/)
-#### django connect to postgresql
-settings
-```python
-import dj_database_url
-DATABASES["default"] = dj_database_url.parse(
-    "External Database URL"
-)
+指定 port 啟動 ngrok ( `<port>` 需對應 launch.json 所指定的 port)
+```shell
+ngrok http <port>
 ```
+此時會生成隨機網址，可讓外網連線。
 
-#### web service
-git中的repo新增requirements.txt檔案，`pip3 freeze > requirements.txt`將環境所安裝套件整理至requirements.txt，另外因為render會用到gunicorn，也需加入requirements.txt中。
+2.修改 `accountingLog/setting.py`
+以下修改成 ngrok 生成的網址
+- `ALLOWED_HOSTS`
+- `CSRF_TRUSTED_ORIGINS`
+- `WEB_URL`
 
-在render新增web service，連接github後選擇repo。
-setting
-Build Command: `pip install -r requirements.txt`
-Start Command: `gunicorn <project name>.wsgi`
+完成後可從外網連線。
 
-## 二、需求
-記帳: 讓使用者在line上可以快速紀錄花費金額
-明細: 查看紀錄明細
-統計: 支出、收入，依照分類計算總和、百分比
 
-可在網頁上快速檢視資料、修改分類設定
+**以下未完成**
+## 三、系統設計
+### (一) 資料庫設計
 
-### (一)註冊/註銷
+### (二) APP
+- `users`: 使用者相關操作
+- `accounting`: 收支記錄相關操作
+
+### (一) 註冊/註銷
 加入好友後，輸入任一訊息註冊。
 PS. 註冊時(user)，自動新增分類(category)
 支出: 飲食、繳費、日常、購物、娛樂、其他
@@ -90,71 +159,3 @@ PS. 註冊時(user)，自動新增分類(category)
 #### 收入
 輸入+amount desc、+amount後，跳出分類按鈕歸納
 若多次點選分類按鈕會重複新增資料 > session?
-
-## 三、資料庫設計
-sqlite? postgresql?
-### 1.使用者資料(user):
-user_id (PK)
-
-### 2.紀錄收支(expenses):
-e_id (PK)
-user_id (FK user)
-c_id (FK category)
-e_date: yyyy/MM/dd
-e_type: 收入(+)或支出(-)
-e_amount
-e_desc
-
-### 3.支出分類(category):
-c_id (PK)
-user_id (FK user)
-c_name
-c_icon
-c_type: 分類屬於收入(+)或支出(-)
-
-## 四、line bot Webhook
-```python
-from linebot.models.events import (
-    MessageEvent,
-    PostbackEvent
-)
-```
-
-### (一)event
-[事件說明](https://ithelp.ithome.com.tw/articles/10229773)
-[群組相關事件及命令](https://ithelp.ithome.com.tw/m/articles/10270259)
-#### 1.MessageEvent
-當使用者傳送訊息給Line Bot時，會觸發MessageEvent事件
-#### 2.PostbackEvent
-[Postback event](https://ithelp.ithome.com.tw/articles/10302926)
-
-### (二)回覆訊息
-```python
-line_bot_api.reply_message(event.reply_token, message)
-```
-* 回傳多個訊息，message為list
-* 訊息種類分為text, image, location, sticker, audio, vedio, template
-* [template](https://ithelp.ithome.com.tw/articles/10282102?sc=pt)
-#### 1.文字訊息
-```python
-TextSendMessage(text = 文字訊息內容)
-```
-#### 2.選單
-```python
-TextSendMessage(
-    text = "提示文字",
-    quick_reply = QuickReply(
-        items = [
-            QuickReplyButton(action = PostbackAction(label=選單1, data=json.dumps(data.__dict__))),
-            QuickReplyButton(action = PostbackAction(label=選單2, data=json.dumps(data.__dict__))),
-                ]
-            )
-        )
-```
-
-### 3. 彈性訊息
-[Flex Message](https://developers.line.biz/en/docs/messaging-api/using-flex-messages/)
-[Flex Message Simulator範本](https://account.line.biz/login?redirectUri=https%3A%2F%2Fdevelopers.line.biz%2Fflex-simulator%2F%3Fstatus%3Dsuccess)
-```python
-FlexSendMessage(alt_text='YOUR_ALT_TEXT', contents=contents))
-```

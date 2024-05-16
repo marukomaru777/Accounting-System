@@ -1,0 +1,63 @@
+{% extends "login-base.html" %}
+{% load static %}
+{% block title %}登入會員｜RichMan{% endblock %}
+{% block link_file %}
+{{ block.super }}
+{% endblock %}
+{% block form_body %}
+<form id="register-form">
+    {% csrf_token %}
+    <tr style="height:60px">
+        <td width="30%" class="section-input">會員帳號</td>
+        <td width="70%" class="section-input">
+            <!-- {{form.username}} -->
+            <input type="email" name="username" maxlength="320" class="form-control" required="" id="id_username" placeholder="請輸入E-MAIL">
+            {% for error in form.username.errors %}
+            <span class="errMsg">{{ error }}</span>
+            {% endfor %}
+            <span class="errMsg" id="username-errMsg"></span>
+        </td>
+    </tr>
+    <tr style="height:60px">
+        <td width="30%" class="section-input">密碼</td>
+        <td width="70%" class="section-input">
+            <!-- {{form.password1}} -->
+            <input type="password" name="password1" class="form-control" required="" id="id_password1" placeholder="請輸入密碼">
+            {% for error in form.password1.errors %}
+            <span class="errMsg">{{ error }}</span>
+            {% endfor %}
+            <span class="errMsg" id="pwd-errMsg"></span>
+        </td>
+    </tr>
+    <tr style="height:60px">
+        <td width="30%" class="section-input">確認密碼</td>
+        <td width="70%" class="section-input">
+            <!-- {{form.password2}} -->
+            <input type="password" name="password2" class="form-control" required="" id="id_password2" placeholder="請再次輸入密碼">
+            {% for error in form.password2.errors %}
+            <span class="errMsg">{{ error }}</span>
+            {% endfor %}
+            <span class="errMsg" id="pwd2-errMsg"></span>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" class="section-input text-center">
+            <button type="submit" class="btn btn-outline-secondary" style="width: 130px; height: 50px;">
+                繼續註冊
+            </button>
+        </td>
+    </tr>
+</form>
+{% endblock %}
+
+{% block js_script %}
+{{ block.super }}
+<!-- define required variables in template -->
+<script>
+    var api_chkAcc = "{% url 'users:chkAcc' %}",
+        api_registration = "{% url 'users:registration' %}",
+        home_url="{% url 'index' %}";
+</script>
+<!-- include your js files -->
+<script src="{% static 'js/registration.js' %}"></script>
+{% endblock %}

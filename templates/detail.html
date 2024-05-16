@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block title %}Detail／明細{% endblock %}
+{% block link_file %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datepicker.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/detail.css' %}">
+<script type="text/javascript" src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap-datepicker.zh-TW.min.js' %}"></script>
+{% endblock %}
+{% block body %}
+<div class="row">
+    <!-- Right Container -->
+    <div class="col-md-2 col-12">
+        <div>
+            <div class="input-group date" id="datepicker-search">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="prev-month-btn">&lt;</button>
+                </div>
+                <input type="text" class="form-control" id="search-text" style="text-align:center; margin: 0px 10px;">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="next-month-btn">&gt;</button>
+                </div>
+            </div>
+        </div>
+        <!-- summary by class -->
+        <div class="col-md-12 d-sm-block d-none side" id="summary-detail">
+            <!-- <div class="tip">各個類別花費</div> -->
+            <!-- Display summary data -->
+            {% for e_type, data in summary_data.items %}
+                <div class="col-12 tip">
+                {% if e_type == '-' %}
+                    支出小計：
+                {% elif e_type == '+' %}
+                    收入小計：
+                {% endif %}
+                {{ data.total_spent }}</div>
+                <ul>
+                    {% for category_name, total_spent in data.categories.items %}
+                    <li>{{ category_name }}：{{ total_spent }}</li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+
+        <!-- summary -->
+        <div class="col-12 side" id="summary">
+            <div class="col-12 tip">
+                合計：{{ total }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Left Container -->
+    <div class="col-md-10 col-12">
+        <!-- tool bar -->
+        <div style="margin: 0;">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#editModal" data-title="新增" data-id="insert">
+                新增
+            </button>
+        </div>
+        <div id="daily-detail">
+            {% for date, data in grouped_expenses.items %}
+            <div class="col-12 row daily-list">
+                <div class="col-12 row sum">
+                    <div class="col-4">{{ date|date:'Y-m-d' }}</div>
+                    <div class="col-8" style="text-align: right;">Total: {{ data.total_amount|floatformat:0|intcomma }}</div>
+                </div>
+                {% for expense in data.expenses %}
+                <div class="col-12 row detail-list">
+                    <div class="col-12 row detail">
+                        <div class="col-md-2 col-2 d-flex justify-content-center align-items-center icon">
+                            <img src="{% static 'img/icon.png' %}" class="img-fluid">
+                        </div>
+                        <div class="col-md-4 col-3 description">
+                            <div class="col-12 class">{{ expense.category.c_name }}</div>
+                            <!-- <div class="col-12 tag">tag</div> -->
+                            <div class="col-12 info">{{ expense.desc_value }}</div>
+                        </div>
+                        <div class="col-md-4 col-3 row amount">
+                            <p class="col-12 text-right" style="text-align: right;">
+                                {% if expense.e_type == '-' %}{{ expense.e_type }}{% endif %}{{ expense.e_amount|floatformat:0|intcomma }}
+                            </p>
+                        </div>
+                        <div class="col-md-2 col-4 d-flex justify-content-center align-items-center edit-btn">
+                            <div class="text-center">
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#editModal" data-title="編輯" data-id="{{ expense.e_id }}">
+                                    編輯
+                                </button>
+                                <button class="btn btn-outline-dark" onclick="deleteData('{{ expense.e_id }}')">
+                                    刪除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% include './form-expense.html' %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" id="modal-insert-btn"
+                    data-dismiss="modal">儲存</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js_script %}
+<!-- define required variables in template -->
+<script>
+    var api_del = "{% url 'accounting:delExpense' %}",
+        api_getEditExpense = "{% url 'accounting:getEditExpense' %}",
+        api_saveExpense = "{% url 'accounting:saveExpense' %}";
+</script>
+<!-- include your js files -->
+<script src="{% static 'js/detail.js' %}"></script>
+{% endblock %}

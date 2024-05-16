@@ -1,0 +1,125 @@
+<table id="input-table">
+    <form id="edit-form">
+        <!-- <div style="display: none;">
+            {{ form.current_user }}
+        </div> -->
+        <tr style="height:60px">
+            <td width="30%">類別</td>
+            <td width="70%">
+                <div class=" form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="type" id="c_type_expense" value="-">
+                    <label class="form-check-label" for="c_type_expense">支出</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="type" id="c_type_income" value="+">
+                    <label class="form-check-label" for="c_type_income">收入</label>
+                </div>
+                <select class="form-select form-control" aria-label="Default select example" id="category-select"
+                    name="category">
+                    <option selected>請選擇該筆分類</option>
+                </select>
+                <span class="errMsg" id="cat-errMsg"></span>
+            </td>
+        </tr>
+        <tr style="height:60px">
+            <td width="30%">金額</td>
+            <td width="70%">
+                <!-- {{form.amount}} -->
+                <input type="number" min="0" class="form-control" id="id_amount" name="amount">
+                <span class="errMsg" id="amount-errMsg"></span>
+            </td>
+        </tr>
+        <tr style="height:60px">
+            <td width="30%">日期</td>
+            <td width="70%">
+                <!-- {{form.date}} -->
+                <input type="text" class="form-control" id="id_date" name="date">
+                <span class="errMsg" id="date-errMsg"></span>
+            </td>
+        </tr>
+        <tr style="height:60px">
+            <td width="30%">備註</td>
+            <td width="70%">
+                <!-- {{form.desc}} -->
+                <textarea class="form-control" id="id_desc" name="desc" rows="3"></textarea>
+                <span class="errMsg" id="desc-errMsg"></span>
+            </td>
+        </tr>
+        <tr style="display: none;">
+            <td width="30%">ID</td>
+            <td width="70%">
+                <!-- {{form.e_id}} -->
+                <input class="form-control" id="id_e_id" name="e_id"></input>
+                <span class="errMsg" id="desc-errMsg"></span>
+            </td>
+        </tr>
+    </form>
+</table>
+<script>
+    const category_raw_data = getCategory();
+    $(function () {
+        let default_type = '-';
+        $('input[type=radio][name=type]').filter('[value="' + default_type + '"]').prop('checked', true);
+        filterCategoryDdl(default_type);
+        $('#id_date').datepicker({
+            format: "yyyy-mm-dd",
+            autoclose: true,//選擇日期後就會自動關閉
+            todayHighlight: true,//今天會有一個底色
+            clearBtn: false,//清除按钮
+            minViewMode: "days", // 選擇月份模式
+            startView: "days", // 初始顯示月份模式
+            language: 'zh-TW'//中文化
+        });
+        $('#id_date').datepicker('update', (new Date()));
+        $('input[type=radio][name=type]').change(function () {
+            filterCategoryDdl(this.value);
+        });
+            
+    });
+
+    // 取得使用者的分類清單
+    function getCategory() {
+        let cat_data;
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "{% url 'accounting:getCategory' %}",
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            data: {
+                // "current_user": "{{ current_user }}",
+            },
+            success: function (response) {
+                if (response.success) {
+                    cat_data = response.result;
+                } else {
+                    alert(response.errors);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("發生錯誤:" + error);
+            }
+        });
+        return cat_data;
+    }
+
+    // 依照花費type(+, -)篩選分類選項
+    function filterCategoryDdl(query) {
+        let filteredData = category_raw_data.filter(function (item) {
+            return item.c_type.includes(query);
+        });
+        let dropdownItems = document.getElementById('category-select');
+        dropdownItems.innerHTML = '';
+
+        let defaultOption = document.createElement('option');
+        defaultOption.textContent = '請選擇該筆分類';
+        defaultOption.setAttribute('selected', true);
+        dropdownItems.appendChild(defaultOption);
+
+        filteredData.forEach(function (item) {
+            let option = document.createElement('option');
+            option.value = item.c_id;
+            option.textContent = item.c_name;
+            dropdownItems.appendChild(option);
+        });
+    }
+</script>

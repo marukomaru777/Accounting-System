@@ -1,0 +1,13 @@
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1380px;
+    }
+}
+
+.header {
+    background-color: white;
+}
+
+#nav {
+    z-index: 999;
+}

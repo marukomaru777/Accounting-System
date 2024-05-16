@@ -1,0 +1,26 @@
+.category-list {
+    margin: 10px 0px;
+    padding: 0px;
+}
+
+.category {
+    margin: 0px 0px;
+    padding: 0px;
+    border: solid 1px #ccc;
+}
+
+.icon {
+    /* padding: 0px 10px; */
+    text-align: center;
+}
+
+.class {
+    /* padding: 0px 10px; */
+    font-size: 20px;
+}
+
+@media (max-device-width: 640px) {
+    .class {
+        font-size: 18px;
+    }
+}

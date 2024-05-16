@@ -1,0 +1,105 @@
+.side {
+    margin-top: 20px;
+    padding: 0;
+}
+
+.side .tip {
+    height: 42px;
+    line-height: 42px;
+    font-size: 18px;
+}
+
+.side ul {
+    list-style: none;
+    padding-left: 20px;
+}
+
+.side li {
+    line-height: 35px;
+}
+
+.daily-list {
+    margin: 10px 0px;
+    padding: 0px;
+    border: solid 1px #ccc;
+}
+
+.sum {
+    background-color: #ccc;
+    margin: 0px;
+    padding: 0px;
+    font-size: 16px;
+}
+
+.detail-list {
+    margin: 0px;
+    padding: 0px;
+}
+
+.detail {
+    margin: 0px;
+    padding: 0px;
+}
+
+.icon {
+    /* padding: 0px 10px; */
+    text-align: center;
+}
+
+.description {
+    /* padding: 0px 10px; */
+}
+
+.class {
+    /* padding: 0px 10px; */
+    font-size: 20px;
+}
+
+.info {
+    /* padding: 0px 10px; */
+    font-size: 16px;
+}
+
+/* .tag {
+    padding: 0px 10px;
+    font-size: 14px;
+} */
+
+.amount {
+    margin: 0px;
+    display: flex;
+    align-items: center;
+    padding: 0px 0px;
+    font-size: 25px;
+}
+
+.edit-btn {
+    padding: 0px;
+    margin: 0px;
+}
+
+@media (max-device-width: 640px) {
+    .icon {
+        padding: 0px;
+    }
+
+    .description {
+        padding: 0px;
+    }
+
+    .class {
+        font-size: 18px;
+    }
+
+    /* .tag {
+        font-size: 12px;
+    } */
+
+    .info {
+        font-size: 12px;
+    }
+
+    .amount {
+        font-size: 20px;
+    }
+}

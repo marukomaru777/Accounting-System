@@ -1,42 +1,51 @@
 from django.db import models
 from datetime import datetime
+from users.models import CustomUser
+from django.utils import timezone
 
 # Create your models here.
-
-
-# Create your models here.
-# 建立用戶模型
-class User(models.Model):
-    user_id = models.CharField(primary_key=True, max_length=100)
-
-    # 定義表的元data：描述其他數據的元素
-    class Meta:
-        db_table = "user"  # table name
 
 
 class Category(models.Model):
     c_id = models.BigAutoField(primary_key=True)
-    user_id = models.CharField(max_length=100)
+    username = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="user_category",
+        to_field="username",
+    )
     c_type = models.CharField(max_length=2)
     c_name = models.CharField(max_length=50)
     c_icon = models.CharField(max_length=200)
+    create_time = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        db_table = "category"  # table name
+        db_table = "tb_category"  # table name
 
 
 class Expenses(models.Model):
     e_id = models.BigAutoField(primary_key=True)
-    user_id = models.CharField(max_length=100)
-    c_id = models.IntegerField()
+    username = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="user_expenses",
+        to_field="username",
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name="category_expenses",
+        to_field="c_id",
+    )
     e_date = models.DateField()
     e_type = models.CharField(max_length=2)
     e_amount = models.FloatField()
-    e_desc = models.CharField(max_length=500)
+    e_desc = models.CharField(max_length=500, null=True)
+    create_time = models.DateTimeField(default=timezone.now)
 
     # 定義表的元data：描述其他數據的元素
     class Meta:
-        db_table = "expenses"  # table name
+        db_table = "tb_expenses"  # table name
 
 
 class ExpenseResult:

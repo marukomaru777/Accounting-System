@@ -1,0 +1,44 @@
+{% extends "login-base.html" %}
+{% load static %}
+{% block title %}登入會員｜RichMan{% endblock %}
+{% block link_file %}
+{{ block.super }}
+{% endblock %}
+{% block form_body %}
+<form method="post" id="login-form">
+    {% csrf_token %}
+    <tr style="height:60px">
+        <td width="30%" class="section-input">會員帳號</td>
+        <td width="70%" class="section-input">
+            <!-- {{form.username}} -->
+            <input type="text" name="username" class="form-control" required="" id="id_username" placeholder="請輸入E-MAIL">
+            <span class="errMsg" id="username-errMsg"></span>
+        </td>
+    </tr>
+    <tr style="height:60px">
+        <td width="30%" class="section-input">會員密碼</td>
+        <td width="70%" class="section-input">
+            <!-- {{form.password}} -->
+            <input type="password" name="password" class="form-control" required="" id="id_password" placeholder="請輸入密碼">
+            <span class="errMsg" id="pwd-errMsg"></span>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" class="section-input text-center">
+            <button type="submit" class="btn btn-outline-secondary" style="width: 130px; height: 50px;">
+                登入
+            </button>
+        </td>
+    </tr>
+</form>
+{% endblock %}
+{% block js_script %}
+<!-- define required variables in template -->
+<script>
+    var api_login = "{% url 'users:login' %}",
+        url_index ="{% url 'index' %}";
+</script>
+<!-- include your js files -->
+<script src="{% static 'js/login.js' %}"></script>
+{{ block.super }}
+{% endblock %}
