@@ -140,7 +140,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# one hour in seconds
+# session, cookie存活長度
 SESSION_COOKIE_AGE = 3600
 
 CSRF_TRUSTED_ORIGINS = [
@@ -156,7 +156,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", default="host pwd")
 EMAIL_USE_TLS = True  # TLS加密
 EMAIL_USE_SSL = False  # SSL加密
 
-# 註冊有效天數
+# 註冊驗證連結有效天數
 CONFIRM_DAYS = 7
 
 # 網站網址

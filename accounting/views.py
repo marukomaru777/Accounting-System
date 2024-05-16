@@ -5,26 +5,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from collections import defaultdict
 from django.db.models.functions import Coalesce
 from django.db.models import Value
-from datetime import datetime, timedelta
-from django.utils import timezone
+from datetime import datetime
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from accounting.models import Expenses, Category
 from users.models import CustomUser
-from datetime import datetime, timedelta
 from django.db.models import Sum
-from django.db import transaction
 import calendar
-
-
-def get_month_range(date_str):
-    date = datetime.strptime(date_str, "%Y-%m")
-    year = date.year
-    month = date.month
-    _, last_day = calendar.monthrange(year, month)
-    start_date = datetime(year, month, 1)
-    end_date = datetime(year, month, last_day)
-    return [start_date, end_date]
 
 
 # Create your views here.
@@ -35,11 +22,8 @@ class DetailView(LoginRequiredMixin, TemplateView):
     context_object_name = "expense_list"
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
-
         context["grouped_expenses"] = self.get_grouped_data()
-
         summary = self.get_summary_data()
 
         # Format the total spent for each category within each expense type
@@ -58,12 +42,13 @@ class DetailView(LoginRequiredMixin, TemplateView):
         context["total"] = format(total, ",")
         return context
 
+    # 取得該月收支資料，並以日期做分群
     def get_grouped_data(self):
         raw_data = (
             Expenses.objects.select_related("category")
             .filter(
                 username=self.request.user.username,
-                e_date__range=get_month_range(self.kwargs["date"]),
+                e_date__range=self.get_month_range(self.kwargs["date"]),
             )
             .annotate(
                 desc_value=Coalesce("e_desc", Value(""))
@@ -86,12 +71,13 @@ class DetailView(LoginRequiredMixin, TemplateView):
         sorted_grouped_expenses = dict(sorted(grouped_expenses.items(), reverse=True))
         return sorted_grouped_expenses
 
+    # 取得該月收支加總統計
     def get_summary_data(self):
         # Aggregate expenses for each category and expense type
         category_summary = (
             Expenses.objects.filter(
                 username=self.request.user.username,
-                e_date__range=get_month_range(self.kwargs["date"]),
+                e_date__range=self.get_month_range(self.kwargs["date"]),
             )
             .values("category__c_name", "e_type")
             .annotate(category_total=Sum("e_amount"))
@@ -116,6 +102,16 @@ class DetailView(LoginRequiredMixin, TemplateView):
 
         return summary_data
 
+    # 將日期處理成該月的起訖日
+    def get_month_range(self, date_str):
+        date = datetime.strptime(date_str, "%Y-%m")
+        year = date.year
+        month = date.month
+        _, last_day = calendar.monthrange(year, month)
+        start_date = datetime(year, month, 1)
+        end_date = datetime(year, month, last_day)
+        return [start_date, end_date]
+
 
 class CategorylView(LoginRequiredMixin, TemplateView):
     login_url = "/"
@@ -132,6 +128,8 @@ class CategorylView(LoginRequiredMixin, TemplateView):
         return category
 
 
+# api
+# 儲存收支資料
 @login_required
 def saveExpense(request):
     try:
@@ -165,6 +163,7 @@ def saveExpense(request):
         return JsonResponse({"success": False, "errors": str(e)})
 
 
+# 取得欲編輯的收支資料
 @login_required
 def getEditExpense(request):
     try:
@@ -180,6 +179,7 @@ def getEditExpense(request):
     return JsonResponse({"success": False})
 
 
+# 取得使用者所設定的類別
 @login_required
 def getCategory(request):
     try:
@@ -193,6 +193,7 @@ def getCategory(request):
     return JsonResponse({"success": False})
 
 
+# 刪除收支資料
 @login_required
 def delExpense(request):
     try:
@@ -208,6 +209,7 @@ def delExpense(request):
     return JsonResponse({"success": False})
 
 
+# 刪除類別資料
 @login_required
 def delCategory(request):
     try:
