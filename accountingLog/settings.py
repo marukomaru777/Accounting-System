@@ -28,7 +28,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY", default="your secret key")
 DEBUG = True
 
 
-ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS", default="your host")]
+ALLOWED_HOSTS = [
+    os.environ.get("ALLOWED_HOSTS", default="127.0.0.1"),
+]
 
 # Application definition
 
@@ -158,11 +160,16 @@ EMAIL_USE_SSL = False  # SSL加密
 CONFIRM_DAYS = 7
 
 # 網站網址
-WEB_URL = os.environ.get("WEB_URL", default="your web url")
+WEB_URL = os.environ.get(
+    "WEB_URL",
+    default="https://*.127.0.0.1",
+)
+
+# auth model 對應
 AUTH_USER_MODEL = "users.CustomUser"
 
 # authenticate() 不會檢查is_active
 AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.AllowAllUsersModelBackend"]
 
 # 使用 @login_required 若使用者無登入，則會跳到登入頁面
-LOGIN_URL = "users/login/"
+LOGIN_URL = "/"

@@ -33,7 +33,6 @@ class DetailView(LoginRequiredMixin, TemplateView):
     redirect_field_name = "redirect_to"
     template_name = "detail.html"
     context_object_name = "expense_list"
-    paginate_by = 20
 
     def get_context_data(self, **kwargs):
 
@@ -57,9 +56,6 @@ class DetailView(LoginRequiredMixin, TemplateView):
 
         context["summary_data"] = summary
         context["total"] = format(total, ",")
-
-        context["pre_date"] = self.get_previous_month()
-        context["next_date"] = self.get_next_month()
         return context
 
     def get_grouped_data(self):
@@ -120,50 +116,20 @@ class DetailView(LoginRequiredMixin, TemplateView):
 
         return summary_data
 
-    def get_previous_month(self):
-        # Convert the current_month string to a datetime object
-        current_month_date = timezone.datetime.strptime(self.kwargs["date"], "%Y-%m")
 
-        # Calculate the first day of the current month
-        first_day_of_current_month = current_month_date.replace(day=1)
+class CategorylView(LoginRequiredMixin, TemplateView):
+    login_url = "/"
+    redirect_field_name = "redirect_to"
+    template_name = "category.html"
 
-        # Calculate the last day of the previous month
-        last_day_of_previous_month = first_day_of_current_month - timedelta(days=1)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["category_list"] = self.get_category_data()
+        return context
 
-        # Extract the year and month of the previous month
-        previous_year = last_day_of_previous_month.year
-        previous_month = last_day_of_previous_month.month
-
-        # Format the previous year and month as a string
-        formatted_previous_month = f"{previous_year}-{previous_month:02d}"
-
-        return formatted_previous_month
-
-    def get_next_month(self):
-        # Convert the current_month string to a datetime object
-        current_month_date = timezone.datetime.strptime(self.kwargs["date"], "%Y-%m")
-
-        # Calculate the first day of the current month
-        first_day_of_current_month = current_month_date.replace(day=1)
-
-        # Calculate the first day of the next month
-        if current_month_date.month == 12:  # If current month is December
-            first_day_of_next_month = first_day_of_current_month.replace(
-                year=current_month_date.year + 1, month=1
-            )
-        else:
-            first_day_of_next_month = first_day_of_current_month.replace(
-                month=current_month_date.month + 1
-            )
-
-        # Extract the year and month of the next month
-        next_year = first_day_of_next_month.year
-        next_month = first_day_of_next_month.month
-
-        # Format the next year and month as a string
-        formatted_next_month = f"{next_year}-{next_month:02d}"
-
-        return formatted_next_month
+    def get_category_data(self):
+        category = Category.objects.filter(username=self.request.user.username)
+        return category
 
 
 @login_required
@@ -236,6 +202,21 @@ def delExpense(request):
                     e_id=request.POST["e_id"], username=request.user.username
                 )
                 expense.delete()
+            return JsonResponse({"success": True, "result": "刪除成功"})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+    return JsonResponse({"success": False})
+
+
+@login_required
+def delCategory(request):
+    try:
+        if request.method == "POST":
+            with transaction.atomic():
+                category = Expenses.objects.get(
+                    c_id=request.POST["c_id"], username=request.user.username
+                )
+                category.delete()
             return JsonResponse({"success": True, "result": "刪除成功"})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})

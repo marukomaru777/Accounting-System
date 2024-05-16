@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+{% block title %}Category／分類設定{% endblock %}
+{% block link_file %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/category.css' %}">
+{% endblock %}
+{% block body %}
+<div class="row justify-content-center align-items-center">
+    <div class=" col-12 col-md-10 row">
+        <div class="col-md-3 col-12" style="background-color: blue;">
+        </div>
+        <div class="col-md-9 col-12 row" style="margin: 0; padding: 0px;">
+            <!-- tool bar -->
+            <div class="col-12" style="margin: 0;">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#editModal" data-title="新增" data-id="insert">
+                    新增
+                </button>
+            </div>
+            <!-- category -->
+            <div class="col-12 row category-list">
+            {% for item in category_list %}
+                <div class="col-12 row category">
+                    <div class="col-2 d-flex justify-content-center align-items-center icon">
+                        <img src="{% static 'img/icon.png' %}" class="img-fluid">
+                    </div>
+                    <div class="col-5 d-flex align-items-center class">
+                        {{ item.c_name }}
+                    </div>
+                    <div class="col-5 d-flex justify-content-center align-items-center edit-btn">
+                        <div class="text-center">
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#editModal" data-title="編輯" data-id="{{ item.c_id }}">
+                                編輯
+                            </button>
+                            <button class="btn btn-outline-dark" onclick="deleteData('{{ item.c_id }}')">
+                                刪除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- {{ item.c_id }}({{ item.c_type }}) -- {{ item.c_name }}, {{ item.c_icon }}<br> -->
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+{% endblock %}
+{% block js_script %}
+<!-- define required variables in template -->
+<script>
+    let api_del = "{% url 'accounting:delCategory' %}";
+</script>
+<!-- include your js files -->
+<script src="{% static 'js/category.js' %}"></script>
+{% endblock %}

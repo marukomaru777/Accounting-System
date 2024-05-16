@@ -1,23 +1,25 @@
 $(function () {
-        // modal
-        $('#editModal').on('show.bs.modal', function (event) {
-            let button = $(event.relatedTarget)
-                , title = button.data('title')
-                , e_id = button.data('id')
-                , modal = $(this);
-            if (e_id){
-                modal.find('.modal-title').text(title);
-                if (e_id == "insert"){
-                    clearInsertForm();
-                    modal.find('#id_e_id').val(e_id);
-                }
-                else{
-                    getEditData(e_id, modal);
-                }
+    // modal
+    $('#editModal').on('show.bs.modal', function (event) {
+        let button = $(event.relatedTarget)
+            , title = button.data('title')
+            , e_id = button.data('id')
+            , modal = $(this);
+        if (e_id){
+            modal.find('.modal-title').text(title);
+            if (e_id == "insert"){
+                clearInsertForm();
+                modal.find('#id_e_id').val(e_id);
             }
-            
-        })
-
+            else{
+                getEditData(e_id, modal);
+            }
+        }
+        
+    })
+    let currentUrl = window.location.pathname,
+        parts = currentUrl.split('/'),
+        dateParam = parts[parts.length - 2];
     // datepicker
     $('#datepicker-search').datepicker({
         format: "yyyy-mm", //設定格式為2019-04
@@ -27,23 +29,24 @@ $(function () {
         minViewMode: "months", // 選擇月份模式
         startView: "months", // 初始顯示月份模式
         language: 'zh-TW'//中文化
-    }).on("change", function () {
+    })
+    $('#datepicker-search').datepicker('update', dateParam);
+    $('#datepicker-search').on("change", function () {
         let selected = $('#search-text').val();
         console.log('get data: ' + selected);
+        let url_detail=`/accounting/detail/${selected}/`;
+        window.location.href=url_detail;
     });
-    $('#datepicker-search').datepicker('update', dateParam);
     
     $('#prev-month-btn').click(function () {
         let current_date = $('#datepicker-search').datepicker('getDate');
         current_date.setMonth(current_date.getMonth() - 1);
-        // $('#datepicker-search').datepicker('update', current_date);
-        window.location.href=url_pre_detail;
+        $('#datepicker-search').datepicker('update', current_date);
     });
     $('#next-month-btn').click(function () {
         let current_date = $('#datepicker-search').datepicker('getDate');
         current_date.setMonth(current_date.getMonth() + 1);
-        // $('#datepicker-search').datepicker('update', current_date);
-        window.location.href=url_next_detail;
+        $('#datepicker-search').datepicker('update', current_date);
     });
 
     // btn

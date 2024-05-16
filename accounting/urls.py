@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from . import views
 
-from accounting.views import DetailView
+from accounting.views import DetailView, CategorylView
 
 app_name = "accounting"  # app namespace
 
@@ -12,8 +12,10 @@ urlpatterns = [
         DetailView.as_view(),
         name="detail",
     ),
-    path("api/getCategory", views.getCategory, name="getCategory"),
-    path("api/delExpense", views.delExpense, name="delExpense"),
-    path("api/getEditExpense", views.getEditExpense, name="getEditExpense"),
-    path("api/saveExpense", views.saveExpense, name="saveExpense"),
+    path("category/", CategorylView.as_view(), name="category"),
+    path("api/getCategory/", views.getCategory, name="getCategory"),
+    path("api/delExpense/", views.delExpense, name="delExpense"),
+    path("api/delCategory/", views.delCategory, name="delCategory"),
+    path("api/getEditExpense/", views.getEditExpense, name="getEditExpense"),
+    path("api/saveExpense/", views.saveExpense, name="saveExpense"),
 ]
