@@ -21,7 +21,7 @@
 - 使用者登入帳號
 
 登入
-![image](./readme_assets/login.png.png)
+![image](./readme_assets/login.png)
 
 ### (三) 明細頁面
 - 登入後才能瀏覽此頁面
@@ -143,7 +143,6 @@ ngrok http <port>
 ### (二) APP
 - `users`: 使用者相關操作
 - `accounting`: 收支記錄相關操作
-- `bot`: line bot api
 
 ### (一) 註冊/註銷
 加入好友後，輸入任一訊息註冊。
