@@ -48,8 +48,8 @@ Add/Edit Data Form
 Demo Environment: macOS
 ### STEP1 clone & cd this folder
 ```shell
-git clone https://github.com/marukomaru777/AccountingLog.git # clone project
-cd AccountingLog # navigate to project folder
+git clone https://github.com/marukomaru777/Accounting-System.git # clone project
+cd Accounting-System # navigate to project folder
 ```
 
 ### STEP2 create virtual environment & install package
@@ -66,7 +66,7 @@ python3 manage.py makemigrations
 python3 manage.py migrate
 ```
 
-### STEP4 Configure `accountingLog/setting.py`
+### STEP4 Configure `Accounting-System/setting.py`
 1. `SECRET_KEY`
 Manually generate
 ```python
@@ -131,7 +131,7 @@ ngrok http <port>
 ```
 This will generate a random URL for external connection.
 
-2. Modify `accountingLog/setting.py`
+2. Modify `Accounting-System/setting.py`
 Update the following with the ngrok-generated URL
 - `ALLOWED_HOSTS`
 - `CSRF_TRUSTED_ORIGINS`
