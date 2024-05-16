@@ -44,7 +44,7 @@
 示範環境：macOS
 ### STEP1 clone & cd this folder
 ```shell
-git clone https://github.com/marukomaru777/AccountingLog # clone專案
+git clone https://github.com/marukomaru777/AccountingLog.git # clone專案
 cd AccountingLog # 切至專案資料夾
 ```
 
