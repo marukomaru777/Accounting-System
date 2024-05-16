@@ -1,51 +1,55 @@
-# 記帳平台
-## 一、系統功能
-### (一) 註冊頁面
-- 使用者註冊帳號
-- 註冊時，系統寄送驗證帳號連結 email 給使用者
-- 點選 email 連結確認註冊
+# Accounting Web
+- Frontend uses JavaScript and BootStrap.
+- Backend is built on the Django framework.
+- The database employed is SQLite.
 
-使用者註冊
+## I. System Functions
+### (1) Registration Page
+- User account registration.
+- System sends a verification account link via email during registration.
+- Click on the email link to confirm registration.
+
+User Registration
 ![image](./readme_assets/registration.png)
 
-註冊驗證信
+Registration Confirmation Email
 ![image](./readme_assets/reg_confirm_mail.png)
 
-點選註冊驗證信連結，成功註冊
+Clicking on Registration Confirmation Email Link - Successful Registration
 ![image](./readme_assets/reg_success.png)
 
-點選註冊驗證信連結，註冊失敗
+Clicking on Registration Confirmation Email Link - Registration Failure
 ![image](./readme_assets/reg_fail.png)
 
-### (二) 登入頁面
-- 使用者登入帳號
+### (2) Login Page
+- User account login.
 
-登入
+Login
 ![image](./readme_assets/login.png)
 
-### (三) 明細頁面
-- 登入後才能瀏覽此頁面
-- 以月份為單位查詢資料
-- 新增/編輯/刪除收支資料
+### (3) Detail Page
+- Accessible only after login.
+- Data query based on month.
+- Add/Edit/Delete income and expense data.
 
-搜尋條件預設為今日的月份
+Default search condition set to the current month
 ![image](./readme_assets/detail.png)
 
-新增/編輯資料
+Add/Edit Data Form
 ![image](./readme_assets/detail-insert.png)
 ![image](./readme_assets/detail-update.png)
 
-### (四) 使用者資料設定
-- 更改個人資料
-- 重設密碼
+### (4) User Data Settings
+- Update personal information.
+- Reset password.
 ![image](./readme_assets/user-info.png)
 
-## 使用此專案
-示範環境：macOS
+## Using This Project
+Demo Environment: macOS
 ### STEP1 clone & cd this folder
 ```shell
-git clone https://github.com/marukomaru777/AccountingLog.git # clone專案
-cd AccountingLog # 切至專案資料夾
+git clone https://github.com/marukomaru777/AccountingLog # clone project
+cd AccountingLog # navigate to project folder
 ```
 
 ### STEP2 create virtual environment & install package
@@ -56,15 +60,15 @@ pip3 install -r requirements.txt
 ```
 
 ### STEP3 migrate database
-使用sqlite
+Using sqlite
 ```shell
 python3 manage.py makemigrations
 python3 manage.py migrate
 ```
 
-### STEP4 設定 `accountingLog/setting.py`
-1.`SECRET_KEY`
-手動生成
+### STEP4 Configure `accountingLog/setting.py`
+1. `SECRET_KEY`
+Manually generate
 ```python
 from django.core.management.utils import get_random_secret_key
 print(get_random_secret_key())
@@ -74,88 +78,71 @@ print(get_random_secret_key())
 SECRET_KEY = "your_generated_secret_key_here"
 ```
 
-2.`ALLOWED_HOSTS`
-設置為本機
+2. `ALLOWED_HOSTS`
+Set to localhost
 ```python
 ALLOWED_HOSTS = ["127.0.0.1"]
 ```
 
-3.`LINE_CHANNEL_ACCESS_TOKEN`, `LINE_CHANNEL_SECRET`
-至[line developers](https://developers.line.me/console/)取得 channel secret、channel access token
+3. `LINE_CHANNEL_ACCESS_TOKEN`, `LINE_CHANNEL_SECRET`
+Obtain channel secret and channel access token from [Line Developers](https://developers.line.me/console/).
 
-4.`CSRF_TRUSTED_ORIGINS"`
-設置為本機
+4. `CSRF_TRUSTED_ORIGINS"`
+Set to localhost
 ```python
 CSRF_TRUSTED_ORIGINS = ["https://*.127.0.0.1"]
 ```
 
-5.`EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`
-至[gmail app password](https://dev.to/krishnaa192/creating-google-app-password-for-django-project-4oj3)取得 app password
+5. `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`
+Get app password from [Gmail app password](https://dev.to/krishnaa192/creating-google-app-password-for-django-project-4oj3).
 ```python
 EMAIL_HOST_USER = "your_gmail_account"
 EMAIL_HOST_PASSWORD = "your_app_password"
 ```
 
-6.`WEB_URL`
-設置為本機，若欲變更網域，則需要更新此變數
+6. `WEB_URL`
+Set to localhost; update for domain change
 ```python
 WEB_URL = "https://*.127.0.0.1"
 ```
 
-設定完成後即可在本機啟動。
+After settings, start locally.
 
-### STEP5 修改vs code launch.json
-指定port:3000
+### STEP5 Modify vs code launch.json
+Specify port: 3000
 ```json
 // launch.json
 "args": [
     "runserver",
-    "3000", //指定port，若無默認8000
+    "3000", // specify port, default is 8000 if not provided
 ]
 ```
 
-### STEP6 使用ngrok讓外網連接
-1.安裝並啟動 ngrok
-[ngrok下載後安裝](https://ngrok.com/download)
+### STEP6 Use ngrok for external connection
+1. Install and start ngrok
+[Download ngrok](https://ngrok.com/download) and install
 ```shell
 ngrok authtoken <token>
 ```
 
-指定 port 啟動 ngrok ( `<port>` 需對應 launch.json 所指定的 port)
+Start ngrok with specified port (`<port>` should match the port specified in launch.json)
 ```shell
 ngrok http <port>
 ```
-此時會生成隨機網址，可讓外網連線。
+This will generate a random URL for external connection.
 
-2.修改 `accountingLog/setting.py`
-以下修改成 ngrok 生成的網址
+2. Modify `accountingLog/setting.py`
+Update the following with the ngrok-generated URL
 - `ALLOWED_HOSTS`
 - `CSRF_TRUSTED_ORIGINS`
 - `WEB_URL`
 
-完成後可從外網連線。
+Once done, you can connect externally.
 
+**Unfinished Section Below**
+## III. System Design
+### (1) Database Design
 
-**以下未完成**
-## 三、系統設計
-### (一) 資料庫設計
-
-### (二) APP
-- `users`: 使用者相關操作
-- `accounting`: 收支記錄相關操作
-
-### (一) 註冊/註銷
-加入好友後，輸入任一訊息註冊。
-PS. 註冊時(user)，自動新增分類(category)
-支出: 飲食、繳費、日常、購物、娛樂、其他
-收入: 薪水、獎金、兼職、投資、零用錢、其他
-封鎖/移除好友後，將所有資料刪除。
-
-### (二)記錄方式: 
-#### 支出
-輸入 desc amount (desc在前面好像比較符合手機打字)、amount後，跳出分類按鈕歸納
-若多次點選分類按鈕會重複新增資料 > session?
-
-#### 收入
-輸入+amount desc、+amount後，跳出分類按鈕歸納
-若多次點選分類按鈕會重複新增資料 > session?
+### (2) APP
+- `users`: Operations related to users
+- `accounting`: Operations related to income and expense records
