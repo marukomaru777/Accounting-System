@@ -199,6 +199,20 @@ def saveUser(request):
         return JsonResponse({"success": False, "errors": str(e)})
 
 
+# 刪除使用者
+@login_required
+def delUser(request):
+    try:
+        if request.method == "POST":
+            with transaction.atomic():
+                user = CustomUser.objects.get(username=request.user.username)
+                user.delete()
+                return JsonResponse({"success": True})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+
+
 # 登出
 @login_required
 def logout_view(request):

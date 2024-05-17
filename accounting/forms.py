@@ -16,3 +16,16 @@ class ExpenseForm(forms.Form):
         super(ExpenseForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
+
+
+
+class CategoryForm(forms.Form):
+    c_id = forms.CharField(required=True)
+    type = forms.CharField(required=True, label="收支")
+    name = forms.CharField(required=True, label="分類名稱")
+
+
+    def __init__(self, *args, **kwargs):
+        super(CategoryForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"

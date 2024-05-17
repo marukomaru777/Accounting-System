@@ -39,9 +39,20 @@ Add/Edit Data Form
 ![image](./readme_assets/detail-insert.png)
 ![image](./readme_assets/detail-update.png)
 
-### (4) User Data Settings
+### (4) Category Setting Page
+- Accessible only after login.
+- Add/Edit/Delete category data.
+
+![image](./readme_assets/category.png)
+
+Add/Edit Data Form
+![image](./readme_assets/category-insert.png)
+![image](./readme_assets/category-update.png)
+
+### (5) User Data Settings
 - Update personal information.
 - Reset password.
+- Delete account.
 ![image](./readme_assets/user-info.png)
 
 ## II. Using This Project
@@ -53,10 +64,15 @@ cd Accounting-System # navigate to project folder
 ```
 
 ### STEP2 create virtual environment & install package
+virtual environment
 ```shell
-python3 -m venv env
-source env/bin/activate
-pip3 install -r requirements.txt
+python3 -m venv env # create new virtual environment
+source env/bin/activate # activate virtual environment
+```
+
+install package
+```shell
+pip3 install -r requirements.txt # install package
 ```
 
 ### STEP3 migrate database

@@ -51,12 +51,12 @@ $(function () {
 
     // btn
     $('#modal-insert-btn').click(function () {
-        saveeditModalData();
+        saveEditModalData();
     });
 });
 
 // 儲存資料
-function saveeditModalData() {
+function saveEditModalData() {
     $.ajax({
         type: "POST",
         async: false,

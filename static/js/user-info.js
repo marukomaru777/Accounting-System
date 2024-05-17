@@ -65,4 +65,27 @@ $(function () {
             }
         });
     });
+
+    $('#btn-delAcc').click(function(event){
+        if(confirm("確定要註銷帳號嗎？一旦刪除將無法復原")){
+            $.ajax({
+                type: "POST",
+                async: false,
+                url: api_del_user,
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                data: {},
+                success: function (response) {
+                    if (response.success) {
+                        alert("註銷成功")
+                        location.reload();
+                    } else {
+                        alert(response.errors);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                }
+            });
+        }
+    })
 })
