@@ -8,7 +8,7 @@
 {% block body %}
 <div class="row justify-content-center align-items-center">
     <div class=" col-12 col-md-10 row">
-        <div class="col-md-3 col-12" style="background-color: blue;">
+        <div class="col-md-3 col-12" style="background-color: #f3f3f3;">
         </div>
         <div class="col-md-9 col-12 row" style="margin: 0; padding: 0px;">
             <!-- tool bar -->
@@ -45,15 +45,37 @@
             </div>
         </div>
     </div>
-    
 </div>
 
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% include './form-category.html' %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" id="modal-insert-btn"
+                    data-dismiss="modal">儲存</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 {% block js_script %}
 <!-- define required variables in template -->
 <script>
-    let api_del = "{% url 'accounting:delCategory' %}";
+    let api_getEditCategory = "{% url 'accounting:getEditCategory' %}",
+        api_saveCategory = "{% url 'accounting:saveCategory' %}",
+        api_del = "{% url 'accounting:delCategory' %}";
 </script>
 <!-- include your js files -->
 <script src="{% static 'js/category.js' %}"></script>

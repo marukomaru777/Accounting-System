@@ -17,5 +17,7 @@ urlpatterns = [
     path("api/delExpense/", views.delExpense, name="delExpense"),
     path("api/delCategory/", views.delCategory, name="delCategory"),
     path("api/getEditExpense/", views.getEditExpense, name="getEditExpense"),
+    path("api/getEditCategory/", views.getEditCategory, name="getEditCategory"),
     path("api/saveExpense/", views.saveExpense, name="saveExpense"),
+    path("api/saveCategory/", views.saveCategory, name="saveCategory"),
 ]

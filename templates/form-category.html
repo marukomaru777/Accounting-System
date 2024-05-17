@@ -1,0 +1,48 @@
+<table id="input-table">
+    <form id="edit-form">
+        <!-- <div style="display: none;">
+            {{ form.current_user }}
+        </div> -->
+        <tr style="height:60px">
+            <td width="30%">Icon</td>
+            <td width="70%">
+                <input class="form-control form-control-sm" id="formFileSm" type="file" name="icon">
+                <span class="errMsg" id="icon-errMsg"></span>
+            </td>
+        </tr>
+        <tr style="height:60px">
+            <td width="30%">類別</td>
+            <td width="70%">
+                <div class=" form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="type" id="c_type_expense" value="-">
+                    <label class="form-check-label" for="c_type_expense">支出</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="type" id="c_type_income" value="+">
+                    <label class="form-check-label" for="c_type_income">收入</label>
+                </div>
+            </td>
+        </tr>
+        <tr style="height:60px">
+            <td width="30%">名稱</td>
+            <td width="70%">
+                <input type="text" class="form-control" id="id_name" name="name">
+                <span class="errMsg" id="name-errMsg"></span>
+            </td>
+        </tr>
+        <tr style="display: none;">
+            <td width="30%">ID</td>
+            <td width="70%">
+                <!-- {{form.e_id}} -->
+                <input class="form-control" id="id_c_id" name="c_id"></input>
+                <span class="errMsg" id="id-errMsg"></span>
+            </td>
+        </tr>
+    </form>
+</table>
+<script>
+    $(function () {
+        // let default_type = '-';
+        // $('input[type=radio][name=type]').filter('[value="' + default_type + '"]').prop('checked', true);
+    });
+</script>

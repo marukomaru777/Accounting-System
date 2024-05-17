@@ -1,4 +1,4 @@
-from .forms import ExpenseForm
+from .forms import ExpenseForm, CategoryForm
 from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -209,13 +209,29 @@ def delExpense(request):
     return JsonResponse({"success": False})
 
 
+# 取得欲編輯的類別資料
+@login_required
+def getEditCategory(request):
+    try:
+        if request.method == "POST":
+            category = (
+                Category.objects.values(
+                    "c_id", "c_name", "c_icon", "c_type"
+                ).filter(username=request.user.username, c_id=request.POST["c_id"])
+            ).first()
+            return JsonResponse({"success": True, "result": category})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+    return JsonResponse({"success": False})
+
+
 # 刪除類別資料
 @login_required
 def delCategory(request):
     try:
         if request.method == "POST":
             with transaction.atomic():
-                category = Expenses.objects.get(
+                category = Category.objects.get(
                     c_id=request.POST["c_id"], username=request.user.username
                 )
                 category.delete()
@@ -223,3 +239,27 @@ def delCategory(request):
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
     return JsonResponse({"success": False})
+
+# 儲存類別資料
+@login_required
+def saveCategory(request):
+    try:
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                if form.cleaned_data["c_id"] == "insert":
+                    category = Category(
+                        username=CustomUser.objects.get(username=request.user.username),
+                        c_name=form.cleaned_data["name"],
+                        c_type=form.cleaned_data["type"],
+                    )
+                else:
+                    category = Category.objects.get(c_id=form.cleaned_data["c_id"])
+                    category.c_type = form.cleaned_data["type"]
+                    category.c_name = form.cleaned_data["name"]
+                # Save the user to the database
+                category.save()
+                return JsonResponse({"success": True})
+    except Exception as e:
+        return JsonResponse({"success": False, "errors": str(e)})
+
