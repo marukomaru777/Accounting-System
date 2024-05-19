@@ -122,9 +122,14 @@ Set to localhost; update for domain change
 WEB_URL = "https://*.127.0.0.1"
 ```
 
+### STEP5 Migrate Database
+```shell
+python3 manage.py migrate
+```
+
 After settings, start locally.
 
-### STEP5 Modify vs code launch.json
+### STEP6 Modify vs code launch.json
 Specify port: 3000
 ```json
 // launch.json
@@ -134,7 +139,7 @@ Specify port: 3000
 ]
 ```
 
-### STEP6 Use ngrok for external connection
+### STEP7 Use ngrok for external connection
 1. Install and start ngrok
 [Download ngrok](https://ngrok.com/download) and install
 ```shell
