@@ -57,7 +57,8 @@ Add/Edit Data Form
 
 
 ### (6) LINE Account Link
-- User use link bot to link account
+- User use line bot to link account.
+- Use line bot to insert income and expense data.
 
 ![image](./readme_assets/link-1.png)
 ![image](./readme_assets/link-2.png)
@@ -91,14 +92,7 @@ install package
 pip3 install -r requirements.txt # install package
 ```
 
-### STEP3 migrate database
-Using sqlite
-```shell
-python3 manage.py makemigrations
-python3 manage.py migrate
-```
-
-### STEP4 Configure `Accounting-System/setting.py`
+### STEP3 Configure `Accounting-System/setting.py`
 1. `SECRET_KEY`
 Manually generate
 ```python
@@ -138,14 +132,14 @@ Set to localhost; update for domain change
 WEB_URL = "https://*.127.0.0.1"
 ```
 
-### STEP5 Migrate Database
+### STEP4 Migrate Database
 ```shell
 python3 manage.py migrate
 ```
 
 After settings, start locally.
 
-### STEP6 Modify vs code launch.json
+### STEP5 Modify vs code launch.json
 Specify port: 3000
 ```json
 // launch.json
@@ -155,7 +149,7 @@ Specify port: 3000
 ]
 ```
 
-### STEP7 Use ngrok for external connection
+### STEP6 Use ngrok for external connection
 1. Install and start ngrok
 [Download ngrok](https://ngrok.com/download) and install
 ```shell
