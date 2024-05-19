@@ -61,11 +61,13 @@ Add/Edit Data Form
 
 ![image](./readme_assets/link-1.png)
 ![image](./readme_assets/link-2.png)
+
 Link success
 ![image](./readme_assets/link-3.png)
+![image](./readme_assets/unlink-1.png)
+
 
 Unlink
-![image](./readme_assets/unlink-1.png)
 ![image](./readme_assets/unlink-2.png)
 
 
