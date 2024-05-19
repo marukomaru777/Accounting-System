@@ -55,6 +55,20 @@ Add/Edit Data Form
 - Delete account.
 ![image](./readme_assets/user-info.png)
 
+
+### (6) LINE Account Link
+- User use link bot to link account
+
+![image](./readme_assets/link-1.png)
+![image](./readme_assets/link-2.png)
+Link success
+![image](./readme_assets/link-3.png)
+
+Unlink
+![image](./readme_assets/unlink-1.png)
+![image](./readme_assets/unlink-2.png)
+
+
 ## II. Using This Project
 Demo Environment: macOS
 ### STEP1 clone & cd this folder
