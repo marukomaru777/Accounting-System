@@ -19,7 +19,8 @@ from django.db.models.functions import Coalesce
 from django.db.models import Value
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-
+import secrets
+import base64
 
 def index(request):
     if request.user.is_authenticated:
@@ -93,6 +94,39 @@ class RegistrationView(View):
         except Exception as e:
             return JsonResponse({"success": False, "errors": "{}".format(e)})
 
+class LoginLineView(View):
+    def get(self, request, token):
+        context = {
+                "token": token,
+                "api_link_line": reverse('users:linkToLine', kwargs={'token': token})
+            }
+        return render(request, "login-line.html", context=context)
+
+    # 檢查密碼
+    def post(self, request, token):
+        try:
+            username = request.POST["username"]
+            password = request.POST["password"]
+            user = authenticate(request, username=username, password=password)
+            if user is not None and user.is_active:
+                # 使用安全隨機數生成器功能（例如，SecureRandom），並使用大於128 bit（16 byte）的數據
+                # 透過 Base64 編碼
+                nonce = base64.urlsafe_b64encode(secrets.token_bytes(16)).decode('utf-8')
+                while CustomUser.objects.filter(nonce=nonce).exists():
+                    nonce = base64.urlsafe_b64encode(secrets.token_bytes(16)).decode('utf-8')
+                
+                link = "https://access.line.me/dialog/bot/accountLink?linkToken={token}&nonce={nonce}".format(token=token, nonce=nonce)
+                # Redirect to a success page.
+                with transaction.atomic():
+                    link_user = CustomUser.objects.get(username=username)
+                    link_user.nonce = nonce
+                    link_user.save()
+                return JsonResponse({"success": True, "link": link})
+            else:
+                # Return an 'invalid login' error message.
+                raise Exception("帳號或密碼錯誤")
+        except Exception as e:
+            return JsonResponse({"success": False, "errors": "{}".format(e)})
 
 # 驗證頁面
 class ConfirmRegistration(View):
@@ -232,3 +266,17 @@ def chkAcc(request):
                 return JsonResponse({"success": True})
     except Exception as e:
         return JsonResponse({"success": False, "errors": str(e)})
+
+
+# 取消 line 綁定
+def cancelLinkToLine(request, lineId):
+    try:
+        with transaction.atomic():
+            user = CustomUser.objects.get(line_id = lineId)
+            user.line_id = None
+            user.nonce = None
+            user.save()
+            message = "取消綁定完成"
+    except Exception as e:
+        message = "系統發生問題：{}".format(str(e))
+    return render(request, "confirm.html", {"message": message})
