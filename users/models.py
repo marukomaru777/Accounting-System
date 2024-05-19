@@ -63,6 +63,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         default=False,
     )
 
+    # line 綁定
+    line_id = models.CharField(max_length=50, null=True)
+    nonce = models.CharField(max_length=50, null=True)
+    
     date_joined = models.DateTimeField(default=timezone.now)
     objects = CustomUserManager()
 

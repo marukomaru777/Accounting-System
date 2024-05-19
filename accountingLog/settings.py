@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "accounting.apps.AccountingConfig",
     "users.apps.UsersConfig",
+    "bot.apps.BotConfig",
     "django.contrib.humanize",
 ]
 

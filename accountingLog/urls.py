@@ -24,4 +24,5 @@ urlpatterns = [
     path("", index, name="index"),
     path("accounting/", include("accounting.urls")),
     path("users/", include("users.urls")),
+    path("bot/", include("bot.urls")),
 ]
