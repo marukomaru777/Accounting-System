@@ -70,6 +70,7 @@ Add/Edit Data Form
 - Update personal information.
 - Reset password.
 - Delete account.
+
 ![image](./readme_assets/user-info.png)
 
 
@@ -89,9 +90,12 @@ Unlink
 ![image](./readme_assets/unlink-2.png)
 
 You can use a Line bot to input "amount description(optional)" to add income and expense data.
-- Add income
+Add income
+
 ![image](./readme_assets/line-income.png)
-- Add expense
+
+Add expense
+
 ![image](./readme_assets/line-expense.png)
 
 You can input "統計" to view the total income and expenses for the month.
