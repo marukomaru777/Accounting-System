@@ -1,13 +1,16 @@
 # Accounting Web
 - Frontend uses JavaScript, jQuery, BootStrap 4.
+
 ![image](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
 [![image](https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white)](https://code.jquery.com/jquery-3.7.1.js)
 [![image](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/docs/4.6/getting-started/introduction/)
 
 - Backend is built on the Django framework.
+
 [![image](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green)](https://www.djangoproject.com/start/)
 
 - The database employed is postgresql, and deploy on Render
+
 [![image](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![image](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://dashboard.render.com/)
 
@@ -86,9 +89,9 @@ Unlink
 ![image](./readme_assets/unlink-2.png)
 
 You can use a Line bot to input "amount description(optional)" to add income and expense data.
-Add income
+- Add income
 ![image](./readme_assets/line-income.png)
-Add expense
+- Add expense
 ![image](./readme_assets/line-expense.png)
 
 You can input "統計" to view the total income and expenses for the month.
