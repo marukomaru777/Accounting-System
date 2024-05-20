@@ -1,7 +1,15 @@
 # Accounting Web
+![image](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green)
+![image](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![image](https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white)
+![image](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
+
+[Accounting System](https://accountinglog.onrender.com/)
+[LINE@](https://page.line.me/840qzpmp)
 - Frontend uses JavaScript and BootStrap.
 - Backend is built on the Django framework.
-- The database employed is SQLite.
+- The database employed is postgresql.
+- User account link to LINE.
 
 ## I. System Functions
 ### (1) Registration Page
@@ -71,9 +79,18 @@ Link success
 Unlink
 ![image](./readme_assets/unlink-2.png)
 
+You can use a Line bot to input "amount description(optional)" to add income and expense data.
+Add income
+![image](./readme_assets/line-income.png)
+Add expense
+![image](./readme_assets/line-expense.png)
 
-## II. Using This Project
+You can input "統計" to view the total income and expenses for the month.
+![image](./readme_assets/line-sum.png)
+
+## II. Usage
 Demo Environment: macOS
+![image](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white)
 ### STEP1 clone & cd this folder
 ```shell
 git clone https://github.com/marukomaru777/Accounting-System.git # clone project
@@ -132,12 +149,28 @@ Set to localhost; update for domain change
 WEB_URL = "https://*.127.0.0.1"
 ```
 
+7. `DATABASES`
+- For postgresql on render, set to External Database URL.
+- For SQLite, mark this setting.
+```python
+import dj_database_url
+DATABASES["default"] = dj_database_url.parse(
+    os.environ.get(
+        "DATABASES",
+        default="your External Database URL",
+    )
+)
+```
+
 ### STEP4 Migrate Database
 ```shell
 python3 manage.py migrate
 ```
 
 After settings, start locally.
+```
+https://*.127.0.0.1/
+```
 
 ### STEP5 Modify vs code launch.json
 Specify port: 3000
@@ -170,10 +203,20 @@ Update the following with the ngrok-generated URL
 
 Once done, you can connect externally.
 
-**Unfinished Section Below**
 ## III. System Design
 ### (1) Database Design
 
 ### (2) APP
 - `users`: Operations related to users
 - `accounting`: Operations related to income and expense records
+- `bot`: Operations related to line bot
+
+## References
+- [User registration with email confirmation](https://www.javatpoint.com/django-user-registration-with-email-confirmation)
+- [Deploy django with Render](https://docs.render.com/deploy-django)
+- [bootstrap 4](https://getbootstrap.com/docs/4.6/getting-started/introduction/)
+
+### LINE API Doc
+- [User account linking](https://developers.line.biz/en/docs/messaging-api/linking-accounts/)
+- [Webhook Event Objects](https://developers.line.biz/en/reference/messaging-api/#webhook-event-objects)
+- [Flex Messages](https://developers.line.biz/en/docs/messaging-api/using-flex-messages/#sending-messages-with-the-messaging-api)
