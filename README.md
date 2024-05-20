@@ -1,17 +1,23 @@
 # Accounting Web
-![image](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green)
-![image](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![image](https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white)
-![image](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
+- Frontend uses JavaScript, jQuery, BootStrap 4.
+![image](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
+[![image](https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white)](https://code.jquery.com/jquery-3.7.1.js)
+[![image](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/docs/4.6/getting-started/introduction/)
 
-[Accounting System](https://accountinglog.onrender.com/)
-[LINE@](https://page.line.me/840qzpmp)
-- Frontend uses JavaScript and BootStrap.
 - Backend is built on the Django framework.
-- The database employed is postgresql.
+[![image](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=green)](https://www.djangoproject.com/start/)
+
+- The database employed is postgresql, and deploy on Render
+[![image](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![image](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://dashboard.render.com/)
+
 - User account link to LINE.
 
 ## I. System Functions
+Demo: 
+[![image](https://img.shields.io/badge/Microsoft_Edge-0078D7?style=for-the-badge&logo=Microsoft-edge&logoColor=white)](https://accountinglog.onrender.com/)
+[![image](https://img.shields.io/badge/Line-00C300?style=for-the-badge&logo=line&logoColor=white)](https://page.line.me/840qzpmp)
+
 ### (1) Registration Page
 - User account registration.
 - System sends a verification account link via email during registration.
@@ -89,8 +95,7 @@ You can input "統計" to view the total income and expenses for the month.
 ![image](./readme_assets/line-sum.png)
 
 ## II. Usage
-Demo Environment: macOS
-![image](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white)
+Demo Environment: ![image](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white)
 ### STEP1 clone & cd this folder
 ```shell
 git clone https://github.com/marukomaru777/Accounting-System.git # clone project
@@ -211,7 +216,7 @@ Once done, you can connect externally.
 - `accounting`: Operations related to income and expense records
 - `bot`: Operations related to line bot
 
-## References
+## IV. References
 - [User registration with email confirmation](https://www.javatpoint.com/django-user-registration-with-email-confirmation)
 - [Deploy django with Render](https://docs.render.com/deploy-django)
 - [bootstrap 4](https://getbootstrap.com/docs/4.6/getting-started/introduction/)
@@ -220,3 +225,6 @@ Once done, you can connect externally.
 - [User account linking](https://developers.line.biz/en/docs/messaging-api/linking-accounts/)
 - [Webhook Event Objects](https://developers.line.biz/en/reference/messaging-api/#webhook-event-objects)
 - [Flex Messages](https://developers.line.biz/en/docs/messaging-api/using-flex-messages/#sending-messages-with-the-messaging-api)
+
+## V. Contact me
+[![image](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/marukomaru777)
