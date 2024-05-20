@@ -90,6 +90,7 @@ Unlink
 ![image](./readme_assets/unlink-2.png)
 
 You can use a Line bot to input "amount description(optional)" to add income and expense data.
+
 Add income
 
 ![image](./readme_assets/line-income.png)
